@@ -1,6 +1,6 @@
 import json
 import random
-from datetime import datetime
+from datetime import datetime, timezone
 
 COLOR_NAMES = ["Azure", "Cerulean", "Crimson", "Emerald", "Indigo", "Magenta", "Ochre", "Saffron", "Scarlet", "Teal", "Vermilion", "Violet", "Amber", "Celeste", "Coral", "Cyan", "Maroon", "Olive"]
 MODIFIERS = ["Vivid", "Deep", "Muted", "Radiant", "Quiet", "Celestial", "Ethereal", "Infinite", "Luminous", "Solitary", "Subtle", "Pure"]
@@ -10,7 +10,7 @@ def generate_color_name(r, g, b):
     name_index = (g + b) % len(COLOR_NAMES)
     return f"{MODIFIERS[mod_index]} {COLOR_NAMES[name_index]}"
 
-# Farbhistorie laden oder neu anlegen
+# Farbhistorie laden
 try:
     with open('colors.json', 'r', encoding='utf-8') as f:
         history = json.load(f)
@@ -23,7 +23,7 @@ g = random.randint(0, 255)
 b = random.randint(0, 255)
 hex_code = f"#{r:02X}{g:02X}{b:02X}"
 color_name = generate_color_name(r, g, b)
-today_str = datetime.utcnow().strftime("%Y-%m-%d")
+today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
 new_entry = {
     "day": day_number,
