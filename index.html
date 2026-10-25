@@ -66,19 +66,21 @@
             Loading...
         </h2>
 
-        <div class="flex flex-col md:flex-row items-center justify-center space-y-2 md:space-y-0 md:space-x-6 text-xl md:text-2xl font-normal opacity-90 color-transition mb-8">
-            <span id="hexValue" class="font-mono cursor-pointer hover:opacity-100" title="Click to copy HEX">#000000</span>
+        <!-- Color Values with direct copy functionality -->
+        <div class="flex flex-col md:flex-row items-center justify-center space-y-3 md:space-y-0 md:space-x-6 text-xl md:text-2xl font-normal opacity-90 color-transition mb-8">
+            <button id="copyHexBtn" class="font-mono btn-ui px-4 py-2 rounded-lg text-lg flex items-center space-x-2 transition hover:scale-105" title="Click to copy HEX">
+                <span id="hexValue">#3A86EF</span>
+                <span id="hexCopyHint" class="text-xs opacity-60 ml-1">(Copy)</span>
+            </button>
             <span class="hidden md:inline text-xs opacity-50">•</span>
-            <span id="rgbValue" class="font-mono cursor-pointer hover:opacity-100" title="Click to copy RGB">RGB (0, 0, 0)</span>
+            <button id="copyRgbBtn" class="font-mono btn-ui px-4 py-2 rounded-lg text-lg flex items-center space-x-2 transition hover:scale-105" title="Click to copy RGB">
+                <span id="rgbValue">RGB (58, 134, 239)</span>
+                <span id="rgbCopyHint" class="text-xs opacity-60 ml-1">(Copy)</span>
+            </button>
         </div>
 
+        <!-- Action Controls -->
         <div class="flex items-center space-x-3">
-            <button id="copyBtn" class="btn-ui color-transition px-5 py-2.5 rounded-lg text-sm font-medium flex items-center space-x-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                </svg>
-                <span id="copyText">Copy Values</span>
-            </button>
             <button id="randomBtn" class="btn-ui color-transition px-5 py-2.5 rounded-lg text-sm font-medium flex items-center space-x-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
@@ -208,21 +210,31 @@
             });
         }
 
+        // Separates Kopieren für HEX
+        document.getElementById('copyHexBtn').addEventListener('click', () => {
+            const hex = document.getElementById('hexValue').innerText;
+            navigator.clipboard.writeText(hex).then(() => {
+                const hint = document.getElementById('hexCopyHint');
+                hint.innerText = '(Copied!)';
+                setTimeout(() => hint.innerText = '(Copy)', 2000);
+            });
+        });
+
+        // Separates Kopieren für RGB
+        document.getElementById('copyRgbBtn').addEventListener('click', () => {
+            const rgb = document.getElementById('rgbValue').innerText;
+            navigator.clipboard.writeText(rgb).then(() => {
+                const hint = document.getElementById('rgbCopyHint');
+                hint.innerText = '(Copied!)';
+                setTimeout(() => hint.innerText = '(Copy)', 2000);
+            });
+        });
+
         document.getElementById('randomBtn').addEventListener('click', () => {
             if(colorHistory.length === 0) return;
             const randomItem = colorHistory[Math.floor(Math.random() * colorHistory.length)];
             const randomDay = Math.floor(Math.random() * 16777216) + 1;
             applyColor(randomItem, true, randomDay);
-        });
-
-        document.getElementById('copyBtn').addEventListener('click', () => {
-            const hex = document.getElementById('hexValue').innerText;
-            const rgb = document.getElementById('rgbValue').innerText;
-            navigator.clipboard.writeText(`${hex} | ${rgb}`).then(() => {
-                const copyText = document.getElementById('copyText');
-                copyText.innerText = 'Copied!';
-                setTimeout(() => copyText.innerText = 'Copy Values', 2000);
-            });
         });
 
         document.getElementById('infoBtn').addEventListener('click', () => document.getElementById('aboutModal').classList.remove('hidden'));
