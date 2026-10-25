@@ -1,0 +1,29 @@
+name: Daily Color Automation
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Täglich um 00:00 Uhr UTC
+  workflow_dispatch:      # Manuelles Auslösen zum Testen erlaubt
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code auschecken
+        uses: actions/checkout@v3
+
+      - name: Python einrichten
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Neue Farbe generieren
+        run: python generate_color.py
+
+      - name: Änderungen im Repository speichern
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add colors.json
+          git commit -m "Automatischer Farbwechsel für heute" || exit 0
+          git push
