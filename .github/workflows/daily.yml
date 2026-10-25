@@ -17,7 +17,13 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Neue Farbe generieren
+      - name: Notwendige Pakete installieren
+        run: pip install requests Pillow
+
+      - name: Neue Farbe generieren & auf Bluesky posten
+        env:
+          BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
+          BLUESKY_PASSWORD: ${{ secrets.BLUESKY_PASSWORD }}
         run: python generate_color.py
 
       - name: Änderungen im Repository speichern
@@ -25,5 +31,5 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add colors.json
-          git commit -m "Automatischer Farbwechsel für heute" || exit 0
+          git commit -m "Automatischer Farbwechsel & Bluesky Post" || exit 0
           git push
