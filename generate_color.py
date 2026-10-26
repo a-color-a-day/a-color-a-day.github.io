@@ -8,12 +8,10 @@ import io
 import colorsys
 
 def generate_color_name(r, g, b):
-    # Konvertiere RGB in HLS (Hue, Lightness, Saturation) für präzise Zuordnung
     rf, gf, bf = r / 255.0, g / 255.0, b / 255.0
     h, l, s = colorsys.rgb_to_hls(rf, gf, bf)
     hue = h * 360
 
-    # Poetische Modifikatoren basierend auf Helligkeit und Sättigung
     if l < 0.22:
         light_mod = ["Deep-sea", "Midnight", "Abyss", "Shadows", "Obsidian"]
     elif l > 0.78:
@@ -23,7 +21,6 @@ def generate_color_name(r, g, b):
     else:
         light_mod = ["Radiant", "Vivid", "Ethereal", "Pure", "Luminous"]
 
-    # Poetische Basisnamen basierend auf dem Farbkreis (Hue 0-360°)
     if hue < 15 or hue >= 345:
         base_names = ["scarlet", "crimson", "ember", "ruby", "blush"]
     elif 15 <= hue < 45:
@@ -41,14 +38,11 @@ def generate_color_name(r, g, b):
     else:
         base_names = ["magenta", "coral", "rose", "orchid", "wine"]
 
-    # Wähle basierend auf den RGB-Werten deterministisch aus den Listen aus, damit es konsistent bleibt
     mod = light_mod[(r + g) % len(light_mod)]
     base = base_names[(g + b) % len(base_names)]
 
-    # Verbinde sie elegant mit Bindestrich oder Leerzeichen
     return f"{mod} {base}"
 
-# Farbhistorie laden
 try:
     with open('colors.json', 'r', encoding='utf-8') as f:
         history = json.load(f)
@@ -57,7 +51,6 @@ except FileNotFoundError:
 
 today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
-# Prüfen, ob für heute bereits eine Farbe existiert
 if history and history[-1].get("date") == today_str:
     latest_entry = history[-1]
     print(f"Using existing color for today: {latest_entry['name']} ({latest_entry['hex']})")
@@ -82,7 +75,6 @@ else:
         json.dump(history, f, indent=2, ensure_ascii=False)
     print(f"Generated Day {day_number}: {color_name} ({hex_code})")
 
-# Bluesky Posting Logic
 handle = os.environ.get("BLUESKY_HANDLE")
 password = os.environ.get("BLUESKY_PASSWORD")
 
@@ -93,4 +85,63 @@ if handle and password:
             "identifier": handle,
             "password": password
         })
-        session_res.raise
+        session_res.raise_for_status()
+        session = session_res.json()
+        access_token = session["accessJwt"]
+        did = session["did"]
+
+        print("Generating color image...")
+        img = Image.new("RGB", (1080, 1080), tuple(latest_entry["rgb"]))
+        img_byte_arr = io.BytesIO()
+        img.save(img_byte_arr, format='JPEG', quality=90)
+        img_bytes = img_byte_arr.getvalue()
+
+        print("Uploading image blob to Bluesky...")
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "image/jpeg"
+        }
+        blob_res = requests.post("https://bsky.social/xrpc/com.atproto.repo.uploadBlob", headers=headers, data=img_bytes)
+        blob_res.raise_for_status()
+        blob_data = blob_res.json()["blob"]
+
+        day_str = str(latest_entry['day']).zfill(5)
+        text = (
+            f"Day {day_str} / 16,777,216\n"
+            f"{latest_entry['name']}\n"
+            f"{latest_entry['hex']} • RGB ({latest_entry['rgb'][0]}, {latest_entry['rgb'][1]}, {latest_entry['rgb'][2]})\n\n"
+            f"\"One small splash of color per day – for eternity.\"\n\n"
+            f"https://a-color-a-day.github.io/infinity/"
+        )
+
+        print("Publishing post to Bluesky...")
+        post_record = {
+            "$type": "app.bsky.feed.post",
+            "text": text,
+            "createdAt": datetime.now(timezone.utc).isoformat(),
+            "embed": {
+                "$type": "app.bsky.embed.images",
+                "images": [
+                    {
+                        "alt": f"{latest_entry['name']} ({latest_entry['hex']})",
+                        "image": blob_data
+                    }
+                ]
+            }
+        }
+
+        post_res = requests.post("https://bsky.social/xrpc/com.atproto.repo.createRecord", headers={
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json"
+        }, json={
+            "repo": did,
+            "collection": "app.bsky.feed.post",
+            "record": post_record
+        })
+        post_res.raise_for_status()
+        print("Successfully posted to Bluesky!")
+
+    except Exception as e:
+        print(f"Error posting to Bluesky: {e}")
+else:
+    print("Bluesky credentials not found in environment variables.")
