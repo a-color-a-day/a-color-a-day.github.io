@@ -9,7 +9,6 @@ import colorsys
 
 SITE_URL = "https://a-color-a-day.github.io/infinity/"
 
-
 def load_color_database():
     """Lädt optional eine lokale Farbdatenbank (z.B. color_database.json)"""
     try:
@@ -18,20 +17,16 @@ def load_color_database():
     except FileNotFoundError:
         return {}
 
-
 def title_case(name):
     """Jedes Wort mit Großbuchstaben beginnen: 'Deep-sea purple' -> 'Deep-sea Purple'."""
     return " ".join(w[:1].upper() + w[1:] for w in name.split(" "))
 
-
 def generate_color_name(r, g, b, hex_code):
-    # 1. Prüfen, ob der HEX-Code in der großen Farbdatenbank existiert
     color_db = load_color_database()
     hex_lower = hex_code.lower()
     if hex_lower in color_db:
         return title_case(color_db[hex_lower])
 
-    # 2. Ansonsten Fallback auf unsere poetische HSL-Logik
     rf, gf, bf = r / 255.0, g / 255.0, b / 255.0
     h, l, s = colorsys.rgb_to_hls(rf, gf, bf)
     hue = h * 360
@@ -67,9 +62,7 @@ def generate_color_name(r, g, b, hex_code):
 
     return title_case(f"{mod} {base}")
 
-
 def link_facets(text, url):
-    """Macht die Adresse im Bluesky-Post anklickbar (Bluesky rechnet in Bytes)."""
     raw = text.encode("utf-8")
     start = raw.find(url.encode("utf-8"))
     if start < 0:
@@ -78,7 +71,6 @@ def link_facets(text, url):
         "index": {"byteStart": start, "byteEnd": start + len(url.encode("utf-8"))},
         "features": [{"$type": "app.bsky.richtext.facet#link", "uri": url}]
     }]
-
 
 try:
     with open('colors.json', 'r', encoding='utf-8') as f:
@@ -96,7 +88,6 @@ else:
     is_new_entry = True
     day_number = max((e.get("day", 0) for e in history), default=0) + 1
 
-    # Jede Farbe kommt nur einmal vor: bereits gezeigte Farben werden übersprungen
     used_hex = {e.get("hex", "").upper() for e in history}
     while True:
         r = random.randint(0, 255)
@@ -121,80 +112,105 @@ else:
         json.dump(history, f, indent=2, ensure_ascii=False)
     print(f"Generated Day {day_number}: {color_name} ({hex_code})")
 
-handle = os.environ.get("BLUESKY_HANDLE")
-password = os.environ.get("BLUESKY_PASSWORD")
+# Bild im Speicher generieren (einmalig für alle Plattformen)
+img = Image.new("RGB", (1080, 1080), tuple(latest_entry["rgb"]))
+img_byte_arr = io.BytesIO()
+img.save(img_byte_arr, format='PNG', optimize=True)
+img_bytes = img_byte_arr.getvalue()
+
+day_str = str(latest_entry['day']).zfill(5)
+text = (
+    f"Day {day_str} / 16,777,216\n"
+    f"{latest_entry['name']}\n"
+    f"{latest_entry['hex']} • RGB ({latest_entry['rgb'][0]}, {latest_entry['rgb'][1]}, {latest_entry['rgb'][2]})\n\n"
+    f"\"One small splash of color per day – for eternity.\"\n\n"
+    f"{SITE_URL}"
+)
+
 force_post = os.environ.get("FORCE_POST") == "1"
 
-if not (handle and password):
-    print("Bluesky credentials not found in environment variables.")
-elif not is_new_entry and not force_post:
-    # Verhindert doppelte Posts, wenn der Lauf am selben Tag nochmal gestartet wird
-    print("Color for today already existed - skipping Bluesky post (set FORCE_POST=1 to post anyway).")
-else:
-    try:
-        print("Logging in to Bluesky...")
-        session_res = requests.post("https://bsky.social/xrpc/com.atproto.server.createSession", json={
-            "identifier": handle,
-            "password": password
-        }, timeout=30)
-        session_res.raise_for_status()
-        session = session_res.json()
-        access_token = session["accessJwt"]
-        did = session["did"]
+# --- 1. BLUESKY POSTING ---
+handle = os.environ.get("BLUESKY_HANDLE")
+password = os.environ.get("BLUESKY_PASSWORD")
 
-        print("Generating color image...")
-        img = Image.new("RGB", (1080, 1080), tuple(latest_entry["rgb"]))
-        img_byte_arr = io.BytesIO()
-        # PNG statt JPEG: verlustfrei, damit die Farbe exakt bleibt
-        img.save(img_byte_arr, format='PNG', optimize=True)
-        img_bytes = img_byte_arr.getvalue()
+if handle and password:
+    if not is_new_entry and not force_post:
+        print("Color for today already existed - skipping Bluesky post.")
+    else:
+        try:
+            print("Logging in to Bluesky...")
+            session_res = requests.post("https://bsky.social/xrpc/com.atproto.server.createSession", json={
+                "identifier": handle,
+                "password": password
+            }, timeout=30)
+            session_res.raise_for_status()
+            session = session_res.json()
+            access_token = session["accessJwt"]
+            did = session["did"]
 
-        print("Uploading image blob to Bluesky...")
-        headers = {
-            "Authorization": f"Bearer {access_token}",
-            "Content-Type": "image/png"
-        }
-        blob_res = requests.post("https://bsky.social/xrpc/com.atproto.repo.uploadBlob",
-                                 headers=headers, data=img_bytes, timeout=60)
-        blob_res.raise_for_status()
-        blob_data = blob_res.json()["blob"]
-
-        day_str = str(latest_entry['day']).zfill(5)
-        text = (
-            f"Day {day_str} / 16,777,216\n"
-            f"{latest_entry['name']}\n"
-            f"{latest_entry['hex']} • RGB ({latest_entry['rgb'][0]}, {latest_entry['rgb'][1]}, {latest_entry['rgb'][2]})\n\n"
-            f"\"One small splash of color per day – for eternity.\"\n\n"
-            f"{SITE_URL}"
-        )
-
-        print("Publishing post to Bluesky...")
-        post_record = {
-            "$type": "app.bsky.feed.post",
-            "text": text,
-            "createdAt": datetime.now(timezone.utc).isoformat(),
-            "facets": link_facets(text, SITE_URL),
-            "embed": {
-                "$type": "app.bsky.embed.images",
-                "images": [
-                    {
-                        "alt": f"{latest_entry['name']} ({latest_entry['hex']})",
-                        "image": blob_data
-                    }
-                ]
+            print("Uploading image blob to Bluesky...")
+            headers = {
+                "Authorization": f"Bearer {access_token}",
+                "Content-Type": "image/png"
             }
-        }
+            blob_res = requests.post("https://bsky.social/xrpc/com.atproto.repo.uploadBlob",
+                                     headers=headers, data=img_bytes, timeout=60)
+            blob_res.raise_for_status()
+            blob_data = blob_res.json()["blob"]
 
-        post_res = requests.post("https://bsky.social/xrpc/com.atproto.repo.createRecord", headers={
-            "Authorization": f"Bearer {access_token}",
-            "Content-Type": "application/json"
-        }, json={
-            "repo": did,
-            "collection": "app.bsky.feed.post",
-            "record": post_record
-        }, timeout=30)
-        post_res.raise_for_status()
-        print("Successfully posted to Bluesky!")
+            print("Publishing post to Bluesky...")
+            post_record = {
+                "$type": "app.bsky.feed.post",
+                "text": text,
+                "createdAt": datetime.now(timezone.utc).isoformat(),
+                "facets": link_facets(text, SITE_URL),
+                "embed": {
+                    "$type": "app.bsky.embed.images",
+                    "images": [
+                        {
+                            "alt": f"{latest_entry['name']} ({latest_entry['hex']})",
+                            "image": blob_data
+                        }
+                    ]
+                }
+            }
 
-    except Exception as e:
-        print(f"Error posting to Bluesky: {e}")
+            post_res = requests.post("https://bsky.social/xrpc/com.atproto.repo.createRecord", headers={
+                "Authorization": f"Bearer {access_token}",
+                "Content-Type": "application/json"
+            }, json={
+                "repo": did,
+                "collection": "app.bsky.feed.post",
+                "record": post_record
+            }, timeout=30)
+            post_res.raise_for_status()
+            print("Successfully posted to Bluesky!")
+        except Exception as e:
+            print(f"Error posting to Bluesky: {e}")
+
+# --- 2. MASTODON POSTING ---
+mastodon_token = os.environ.get("MASTODON_ACCESS_TOKEN")
+mastodon_url = os.environ.get("MASTODON_API_BASE_URL")
+
+if mastodon_token and mastodon_url:
+    if not is_new_entry and not force_post:
+        print("Color for today already existed - skipping Mastodon post.")
+    else:
+        try:
+            print("Uploading image to Mastodon...")
+            media_headers = {"Authorization": f"Bearer {mastodon_token}"}
+            files = {"file": ("color.png", img_bytes, "image/png")}
+            media_res = requests.post(f"{mastodon_url}/api/v1/media", headers=media_headers, files=files, timeout=60)
+            media_res.raise_for_status()
+            media_id = media_res.json()["id"]
+
+            print("Publishing post to Mastodon...")
+            status_data = {
+                "status": text,
+                "media_ids": [media_id]
+            }
+            status_res = requests.post(f"{mastodon_url}/api/v1/statuses", headers=media_headers, json=status_data, timeout=30)
+            status_res.raise_for_status()
+            print("Successfully posted to Mastodon!")
+        except Exception as e:
+            print(f"Error posting to Mastodon: {e}")
