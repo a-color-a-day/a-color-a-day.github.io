@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>a color a day</title>
+    <link rel="icon" href="data:,">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Atkinson Hyperlegible', sans-serif;
+            transition: background-color 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            background-color: #372BAC;
+            color: #FFFFFF;
+        }
+        .color-transition {
+            transition: color 0.8s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.8s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .btn-ui {
+            border: 1px solid currentColor;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(8px);
+        }
+        .btn-ui:hover {
+            background: rgba(255, 255, 255, 0.18);
+        }
+        .dark-mode .btn-ui {
+            background: rgba(0, 0, 0, 0.06);
+        }
+        .dark-mode .btn-ui:hover {
+            background: rgba(0, 0, 0, 0.12);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-6 md:p-12 select-none overflow-x-hidden">
+
+    <!-- Header Navigation -->
+    <header class="flex justify-between items-center w-full max-w-7xl mx-auto z-10 color-transition">
+        <div class="flex items-center space-x-3">
+            <h1 class="text-base font-bold tracking-wider uppercase">a color a day</h1>
+        </div>
+
+        <div class="flex items-center space-x-3">
+            <button id="infoBtn" class="btn-ui color-transition px-4 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span>About</span>
+            </button>
+            <button id="archiveBtn" class="btn-ui color-transition px-4 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                </svg>
+                <span>Archive</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Display -->
+    <main class="my-auto flex flex-col items-center justify-center text-center z-10 my-12">
+        <p id="dayCounter" class="text-base font-medium tracking-widest opacity-80 mb-3 color-transition">
+            Day 00002 / 16,777,216
+        </p>
+
+        <h2 id="colorName" class="text-4xl md:text-6xl font-bold tracking-tight mb-6 max-w-3xl leading-tight color-transition">
+            Deep-sea purple
+        </h2>
+
+        <!-- Color Values -->
+        <div class="flex flex-col md:flex-row items-center justify-center space-y-3 md:space-y-0 md:space-x-6 text-xl md:text-2xl font-normal opacity-90 color-transition mb-8">
+            <button id="copyHexBtn" class="font-mono btn-ui px-4 py-2 rounded-lg text-lg flex items-center space-x-2.5 transition hover:scale-105 cursor-pointer" title="Click to copy HEX">
+                <svg class="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                </svg>
+                <span id="hexValue">#372BAC</span>
+            </button>
+            <span class="hidden md:inline text-xs opacity-50">•</span>
+            <button id="copyRgbBtn" class="font-mono btn-ui px-4 py-2 rounded-lg text-lg flex items-center space-x-2.5 transition hover:scale-105 cursor-pointer" title="Click to copy RGB">
+                <svg class="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                </svg>
+                <span id="rgbValue">RGB (55, 43, 172)</span>
+            </button>
+        </div>
+
+        <!-- Action Controls -->
+        <div class="flex items-center space-x-3">
+            <button id="randomBtn" class="btn-ui color-transition px-5 py-2.5 rounded-lg text-sm font-medium flex items-center space-x-2.5 cursor-pointer">
+                <svg class="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"></path>
+                </svg>
+                <span>Explore Random</span>
+            </button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="flex flex-col md:flex-row justify-between items-center w-full max-w-7xl mx-auto z-10 text-xs opacity-75 space-y-2 md:space-y-0 color-transition">
+        <p>A 45,000-year artwork celebrating infinity and patience.</p>
+        <div class="flex items-center space-x-4">
+            <button id="imprintBtn" class="hover:underline bg-transparent border-none cursor-pointer">Imprint</button>
+            <span id="dateDisplay">26.10.2026</span>
+        </div>
+    </footer>
+
+    <!-- About Modal -->
+    <div id="aboutModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 justify-center items-center p-6" style="display: none;">
+        <div class="bg-neutral-900 text-white rounded-lg p-8 max-w-xl w-full max-h-[85vh] flex flex-col shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold tracking-wide">The Endless Journey</h3>
+                <button id="closeAbout" class="text-neutral-400 hover:text-white text-2xl font-bold cursor-pointer">&times;</button>
+            </div>
+            <div class="space-y-4 text-sm text-neutral-300 overflow-y-auto pr-2 leading-relaxed">
+                <p>Imagine we enter a boundless world – the world of colors. In this world there are 16,777,216 unique color nuances, each defined by its individual blend of red, green and blue (RGB). Each of these shades tells its own story, evokes its own emotion, is a little piece of magic.</p>
+                <p>The idea is as simple as it is fascinating: Every day we generate a completely random RGB hue and share it with you. A small moment of surprise that reminds us how diverse and beautiful the world around us is.</p>
+                <p>Why? Because it is a journey that will last for generations. A new shade every day – and it would take more than 45,000 years to post all RGB colors. It is a tribute to infinity and patience, a creative experiment that makes us pause and shows us how unique every moment, every day is.</p>
+                <p class="font-medium text-white pt-2">Will you be part of this journey? Immerse yourself with us in the world of colors. Let yourself be surprised, inspired, and discover beauty in the seemingly simple – day by day, shade by shade.</p>
+                <p class="italic text-neutral-400 pt-2 text-center">"One small splash of color per day – for eternity."</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Archive Modal -->
+    <div id="archiveModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 justify-center items-center p-6" style="display: none;">
+        <div class="bg-neutral-900 text-white rounded-lg p-6 max-w-2xl w-full max-h-[80vh] flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Past Colors Mosaic</h3>
+                <button id="closeArchive" class="text-neutral-400 hover:text-white text-2xl font-bold cursor-pointer">&times;</button>
+            </div>
+            <p class="text-sm text-neutral-400 mb-4">A growing mosaic of days passed.</p>
+            <div id="mosaicGrid" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 overflow-y-auto p-2 bg-neutral-950 rounded-lg flex-1 min-h-[200px]"></div>
+        </div>
+    </div>
+
+    <!-- Imprint Modal -->
+    <div id="imprintModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 justify-center items-center p-6" style="display: none;">
+        <div class="bg-neutral-900 text-white rounded-lg p-6 max-w-md w-full max-h-[85vh] overflow-y-auto flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Imprint / Impressum</h3>
+                <button id="closeImprint" class="text-neutral-400 hover:text-white text-2xl font-bold cursor-pointer">&times;</button>
+            </div>
+            <div class="text-sm text-neutral-300 space-y-3">
+                <p><strong>Angaben gemäß § 5 DDG</strong></p>
+                <p>Thomas Schlembach<br>
+                Lange Reihe 50<br>
+                14532 Kleinmachnow<br>
+                Germany</p>
+                <p><strong>Kontakt / Contact</strong><br>
+                E-Mail: <a href="mailto:acoloraday@tutamail.com" class="underline hover:text-white">acoloraday@tutamail.com</a></p>
+                <p class="text-xs text-neutral-500 pt-4">Privates, nicht-kommerzielles Kunstprojekt über Farbe und Unendlichkeit.<br>
+                A private, non-commercial art project celebrating color and infinity.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Notfall-Daten: werden nur genutzt, wenn colors.json nicht geladen werden kann.
+        let colorHistory = [
+            { day: 1, date: "2026-10-25", hex: "#B8ABC5", rgb: [184, 171, 197], name: "Lilac Mist" },
+            { day: 2, date: "2026-10-26", hex: "#372BAC", rgb: [55, 43, 172], name: "Deep-sea purple" }
+        ];
+
+        // 2026-10-26  ->  26.10.2026
+        function formatDate(iso) {
+            const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || '');
+            return m ? `${m[3]}.${m[2]}.${m[1]}` : (iso || '');
+        }
+
+        // Macht aus jedem Eintrag der colors.json ein einheitliches, sicheres Format.
+        function normalize(item) {
+            if (!item || !item.hex) return null;
+            let rgb = item.rgb;
+            if (typeof rgb === 'string') rgb = rgb.split(',').map(s => parseInt(s, 10));
+            if (!Array.isArray(rgb) || rgb.length < 3 || rgb.some(isNaN)) {
+                const m = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(item.hex);
+                if (!m) return null;
+                rgb = m.slice(1).map(h => parseInt(h, 16));
+            }
+            return { ...item, rgb, name: item.name || item.hex };
+        }
+
+        function getLuminance(r, g, b) {
+            const a = [r, g, b].map(v => {
+                v /= 255;
+                return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+            });
+            return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+        }
+
+        function applyColor(item) {
+            if (!item) return;
+            const hex = item.hex;
+            const name = item.name;
+            const day = item.day;
+            const date = item.date;
+
+            const r = item.rgb ? item.rgb[0] : (item.r || 0);
+            const g = item.rgb ? item.rgb[1] : (item.g || 0);
+            const b = item.rgb ? item.rgb[2] : (item.b || 0);
+
+            document.body.style.backgroundColor = hex;
+
+            const luminance = getLuminance(r, g, b);
+            if (luminance > 0.45) {
+                document.body.style.color = "#111827";
+                document.body.classList.add("dark-mode");
+            } else {
+                document.body.style.color = "#FFFFFF";
+                document.body.classList.remove("dark-mode");
+            }
+
+            const nameEl = document.getElementById('colorName');
+            if (nameEl) nameEl.innerText = name;
+
+            const hexEl = document.getElementById('hexValue');
+            if (hexEl) hexEl.innerText = hex;
+
+            const rgbEl = document.getElementById('rgbValue');
+            if (rgbEl) rgbEl.innerText = `RGB (${r}, ${g}, ${b})`;
+
+            const counterEl = document.getElementById('dayCounter');
+            if (counterEl) counterEl.innerText = `Day ${String(day).padStart(5, '0')} / 16,777,216`;
+
+            const dateEl = document.getElementById('dateDisplay');
+            if (dateEl && date) dateEl.innerText = formatDate(date);
+        }
+
+        function renderMosaic() {
+            const grid = document.getElementById('mosaicGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            colorHistory.forEach((item) => {
+                const tile = document.createElement('div');
+                tile.className = 'aspect-square rounded-md cursor-pointer transition-transform hover:scale-105';
+                tile.style.backgroundColor = item.hex;
+                const datePart = item.date ? `, ${formatDate(item.date)}` : '';
+                tile.title = `Day ${item.day}: ${item.name} (${item.hex})${datePart}`;
+                tile.onclick = () => {
+                    applyColor(item);
+                    const modal = document.getElementById('archiveModal');
+                    if (modal) modal.style.display = 'none';
+                };
+                grid.appendChild(tile);
+            });
+        }
+
+        async function initApp() {
+            applyColor(colorHistory[colorHistory.length - 1]);
+            renderMosaic();
+
+            function safeListen(id, event, callback) {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener(event, callback);
+                }
+            }
+
+            function copyText(text, btnId) {
+                if (!navigator.clipboard) return;
+                navigator.clipboard.writeText(text).then(() => {
+                    const btn = document.getElementById(btnId);
+                    if (!btn) return;
+                    btn.classList.add('ring-2', 'ring-current');
+                    setTimeout(() => btn.classList.remove('ring-2', 'ring-current'), 1000);
+                }).catch(() => {});
+            }
+
+            safeListen('copyHexBtn', 'click', () => {
+                const el = document.getElementById('hexValue');
+                if (el) copyText(el.innerText, 'copyHexBtn');
+            });
+
+            safeListen('copyRgbBtn', 'click', () => {
+                const el = document.getElementById('rgbValue');
+                if (el) copyText(el.innerText, 'copyRgbBtn');
+            });
+
+            safeListen('randomBtn', 'click', () => {
+                if (colorHistory.length === 0) return;
+                const randomItem = colorHistory[Math.floor(Math.random() * colorHistory.length)];
+                applyColor(randomItem);
+            });
+
+            safeListen('infoBtn', 'click', () => {
+                const m = document.getElementById('aboutModal');
+                if (m) m.style.display = 'flex';
+            });
+            safeListen('closeAbout', 'click', () => {
+                const m = document.getElementById('aboutModal');
+                if (m) m.style.display = 'none';
+            });
+
+            safeListen('archiveBtn', 'click', () => {
+                const m = document.getElementById('archiveModal');
+                if (m) m.style.display = 'flex';
+            });
+            safeListen('closeArchive', 'click', () => {
+                const m = document.getElementById('archiveModal');
+                if (m) m.style.display = 'none';
+            });
+
+            safeListen('imprintBtn', 'click', () => {
+                const m = document.getElementById('imprintModal');
+                if (m) m.style.display = 'flex';
+            });
+            safeListen('closeImprint', 'click', () => {
+                const m = document.getElementById('imprintModal');
+                if (m) m.style.display = 'none';
+            });
+
+            try {
+                const response = await fetch('colors.json?' + new Date().getTime());
+                if (response.ok) {
+                    const data = await response.json();
+                    const clean = Array.isArray(data)
+                        ? data.map(normalize).filter(Boolean).sort((a, b) => a.day - b.day)
+                        : [];
+                    if (clean.length > 0) {
+                        colorHistory = clean;
+                        applyColor(colorHistory[colorHistory.length - 1]);
+                        renderMosaic();
+                    }
+                }
+            } catch (e) {
+                console.log("Using embedded color fallback");
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
+    </script>
+</body>
+</html>
