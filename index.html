@@ -5,35 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>a color a day</title>
     <link rel="icon" href="data:,">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Atkinson Hyperlegible', sans-serif;
-            transition: background-color 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-            background-color: #372BAC;
-            color: #FFFFFF;
-        }
-        .color-transition {
-            transition: color 0.8s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.8s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .btn-ui {
-            border: 1px solid currentColor;
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(8px);
-        }
-        .btn-ui:hover {
-            background: rgba(255, 255, 255, 0.18);
-        }
-        .dark-mode .btn-ui {
-            background: rgba(0, 0, 0, 0.06);
-        }
-        .dark-mode .btn-ui:hover {
-            background: rgba(0, 0, 0, 0.12);
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body class="min-h-screen flex flex-col justify-between p-6 md:p-12 select-none overflow-x-hidden">
 
@@ -102,6 +74,7 @@
         <p>A 45,000-year artwork celebrating infinity and patience.</p>
         <div class="flex items-center space-x-4">
             <button id="imprintBtn" class="hover:underline bg-transparent border-none cursor-pointer">Imprint</button>
+            <button id="privacyBtn" class="hover:underline bg-transparent border-none cursor-pointer">Privacy</button>
             <span id="dateDisplay">26.10.2026</span>
         </div>
     </footer>
@@ -152,6 +125,39 @@
                 E-Mail: <a href="mailto:acoloraday@tutamail.com" class="underline hover:text-white">acoloraday@tutamail.com</a></p>
                 <p class="text-xs text-neutral-500 pt-4">Privates, nicht-kommerzielles Kunstprojekt über Farbe und Unendlichkeit.<br>
                 A private, non-commercial art project celebrating color and infinity.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Privacy Modal -->
+    <div id="privacyModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 justify-center items-center p-6" style="display: none;">
+        <div class="bg-neutral-900 text-white rounded-lg p-6 max-w-xl w-full max-h-[85vh] flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Datenschutz / Privacy</h3>
+                <button id="closePrivacy" class="text-neutral-400 hover:text-white text-2xl font-bold cursor-pointer">&times;</button>
+            </div>
+            <div class="text-sm text-neutral-300 space-y-3 overflow-y-auto pr-2 leading-relaxed">
+                <p class="italic text-neutral-400">In short: This site uses no cookies, no tracking and no external fonts or scripts. Our hosting provider GitHub processes your IP address in technical server logs when you visit. Details in German below.</p>
+
+                <p class="font-bold text-white pt-2">1. Verantwortlicher</p>
+                <p>Thomas Schlembach<br>Lange Reihe 50, 14532 Kleinmachnow, Deutschland<br>
+                E-Mail: <a href="mailto:acoloraday@tutamail.com" class="underline hover:text-white">acoloraday@tutamail.com</a></p>
+
+                <p class="font-bold text-white pt-2">2. Hosting über GitHub Pages</p>
+                <p>Diese Seite wird bei GitHub Pages gehostet (GitHub Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA). Beim Aufruf der Seite verarbeitet GitHub technisch notwendige Verbindungsdaten, insbesondere Ihre IP-Adresse, Datum und Uhrzeit, die aufgerufene Datei sowie Angaben zu Browser und Betriebssystem. Diese Daten sind nötig, um die Seite auszuliefern und ihre Sicherheit zu gewährleisten. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einer sicheren und zuverlässigen Bereitstellung der Seite).</p>
+                <p>GitHub hat seinen Sitz in den USA. Nach Angaben von GitHub erfolgen Datenübermittlungen auf Grundlage von EU-Standardvertragsklauseln beziehungsweise des EU-US Data Privacy Framework. Mehr dazu in der <a href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement" target="_blank" rel="noopener noreferrer" class="underline hover:text-white">Datenschutzerklärung von GitHub</a>. Auf diese Protokolldaten habe ich selbst keinen Zugriff.</p>
+
+                <p class="font-bold text-white pt-2">3. Was diese Seite nicht tut</p>
+                <p>Die Seite setzt keine Cookies, verwendet keine Analyse- oder Tracking-Werkzeuge und speichert nichts in Ihrem Browser. Schriften und Gestaltung werden direkt von dieser Seite geladen, nicht von Servern Dritter. Das Kopieren eines Farbwerts in die Zwischenablage geschieht ausschließlich auf Ihrem Gerät, es werden keine Daten übertragen.</p>
+
+                <p class="font-bold text-white pt-2">4. Kontakt per E-Mail</p>
+                <p>Wenn Sie mir schreiben, verarbeite ich Ihre E-Mail-Adresse und den Inhalt Ihrer Nachricht, um Ihre Anfrage zu beantworten (Art. 6 Abs. 1 lit. f DSGVO, bei vertragsähnlichem Bezug lit. b). Ich lösche die Nachricht, sobald Ihre Anfrage erledigt ist und keine gesetzlichen Aufbewahrungspflichten entgegenstehen.</p>
+
+                <p class="font-bold text-white pt-2">5. Ihre Rechte</p>
+                <p>Sie haben das Recht auf Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung der Verarbeitung (Art. 18), Datenübertragbarkeit (Art. 20) und Widerspruch (Art. 21). Schreiben Sie dafür einfach an die oben genannte E-Mail-Adresse.</p>
+                <p>Sie können sich außerdem bei einer Datenschutz-Aufsichtsbehörde beschweren (Art. 77 DSGVO), zum Beispiel bei der zuständigen Landesbehörde: Die Landesbeauftragte für den Datenschutz und für das Recht auf Akteneinsicht Brandenburg, Stahnsdorfer Damm 77, 14532 Kleinmachnow, <a href="https://www.lda.brandenburg.de" target="_blank" rel="noopener noreferrer" class="underline hover:text-white">www.lda.brandenburg.de</a>.</p>
+
+                <p class="text-xs text-neutral-500 pt-3">Stand: Oktober 2026</p>
             </div>
         </div>
     </div>
@@ -308,6 +314,15 @@
             });
             safeListen('closeImprint', 'click', () => {
                 const m = document.getElementById('imprintModal');
+                if (m) m.style.display = 'none';
+            });
+
+            safeListen('privacyBtn', 'click', () => {
+                const m = document.getElementById('privacyModal');
+                if (m) m.style.display = 'flex';
+            });
+            safeListen('closePrivacy', 'click', () => {
+                const m = document.getElementById('privacyModal');
                 if (m) m.style.display = 'none';
             });
 
