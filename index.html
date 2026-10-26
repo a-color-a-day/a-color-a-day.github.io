@@ -117,4 +117,90 @@
                 <p>The idea is as simple as it is fascinating: Every day we generate a completely random RGB hue and share it with you. A small moment of surprise that reminds us how diverse and beautiful the world around us is.</p>
                 <p>Why? Because it is a journey that will last for generations. A new shade every day – and it would take more than 45,000 years to post all RGB colors. It is a tribute to infinity and patience, a creative experiment that makes us pause and shows us how unique every moment, every day is.</p>
                 <p class="font-medium text-white pt-2">Will you be part of this journey? Immerse yourself with us in the world of colors. Let yourself be surprised, inspired, and discover beauty in the seemingly simple – day by day, shade by shade.</p>
-                <p class="italic text-neutral-40
+                <p class="italic text-neutral-400 pt-2 text-center">"One small splash of color per day – for eternity."</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Archive Modal -->
+    <div id="archiveModal" class="fixed inset-0 bg-black/60 backdrop-blur-md hidden z-50 flex items-center justify-center p-6">
+        <div class="bg-neutral-900 text-white rounded-lg p-6 max-w-2xl w-full max-h-[80vh] flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Past Colors Mosaic</h3>
+                <button id="closeArchive" class="text-neutral-400 hover:text-white text-2xl font-bold cursor-pointer">&times;</button>
+            </div>
+            <p class="text-sm text-neutral-400 mb-4">A growing mosaic of days passed.</p>
+            <div id="mosaicGrid" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 overflow-y-auto p-2 bg-neutral-950 rounded-lg flex-1 min-h-[200px]"></div>
+        </div>
+    </div>
+
+    <!-- Imprint Modal -->
+    <div id="imprintModal" class="fixed inset-0 bg-black/60 backdrop-blur-md hidden z-50 flex items-center justify-center p-6">
+        <div class="bg-neutral-900 text-white rounded-lg p-6 max-w-md w-full flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Imprint / Legal Notice</h3>
+                <button id="closeImprint" class="text-neutral-400 hover:text-white text-2xl font-bold cursor-pointer">&times;</button>
+            </div>
+            <div class="text-sm text-neutral-300 space-y-3">
+                <p><strong>Information according to § 5 TMG:</strong></p>
+                <p>Thomas Schlembach<br>Kleinmachnow, Deutschland</p>
+                <p><strong>Contact:</strong><br>E-Mail: <a href="mailto:thomas.schlembach@posteo.de" class="underline hover:text-white">thomas.schlembach@posteo.de</a></p>
+                <p class="text-xs text-neutral-500 pt-4">This is a private, non-commercial art project celebrating color and infinity.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let colorHistory = [
+            { day: 1, date: "2026-10-25", hex: "#B8ABC5", rgb: [184, 171, 197], name: "Lilac mist" },
+            { day: 2, date: "2026-10-26", hex: "#372BAC", rgb: [55, 43, 172], name: "Deep-sea purple" }
+        ];
+
+        function getLuminance(r, g, b) {
+            const a = [r, g, b].map(v => {
+                v /= 255;
+                return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+            });
+            return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+        }
+
+        function applyColor(item) {
+            if (!item) return;
+            const hex = item.hex;
+            const name = item.name;
+            const day = item.day;
+            const date = item.date;
+            
+            const r = item.rgb ? item.rgb[0] : (item.r || 0);
+            const g = item.rgb ? item.rgb[1] : (item.g || 0);
+            const b = item.rgb ? item.rgb[2] : (item.b || 0);
+            
+            document.body.style.backgroundColor = hex;
+
+            const luminance = getLuminance(r, g, b);
+            if (luminance > 0.45) {
+                document.body.style.color = "#111827";
+                document.body.classList.add("dark-mode");
+            } else {
+                document.body.style.color = "#FFFFFF";
+                document.body.classList.remove("dark-mode");
+            }
+
+            document.getElementById('colorName').innerText = name;
+            document.getElementById('hexValue').innerText = hex;
+            document.getElementById('rgbValue').innerText = `RGB (${r}, ${g}, ${b})`;
+            document.getElementById('dayCounter').innerText = `Day ${String(day).padStart(5, '0')} / 16,777,216`;
+            if (date) {
+                document.getElementById('dateDisplay').innerText = date;
+            }
+        }
+
+        function renderMosaic() {
+            const grid = document.getElementById('mosaicGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            colorHistory.forEach((item, index) => {
+                const tile = document.createElement('div');
+                tile.className = 'aspect-square rounded-md cursor-pointer transition-transform hover:scale-105';
+                tile.style.backgroundColor = item.hex;
+                tile.title
