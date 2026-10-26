@@ -1,0 +1,48 @@
+name: Daily Color Automation
+
+on:
+  schedule:
+    # Täglich kurz nach 00:00 UTC (01:17 / 02:17 Uhr deutsche Zeit).
+    # Bewusst NICHT genau 0:00: Zur vollen Stunde ist GitHub überlastet,
+    # dort starten geplante Läufe oft deutlich verspätet oder gar nicht.
+    - cron: '17 0 * * *'
+  workflow_dispatch:      # Manuelles Auslösen zum Testen erlaubt
+
+permissions:
+  contents: write         # WICHTIG: Gibt dem Roboter Schreibrechte für das Archiv
+
+# Verhindert, dass zwei Läufe gleichzeitig starten (z. B. manuell + automatisch)
+concurrency:
+  group: daily-color
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Code auschecken
+        uses: actions/checkout@v4
+
+      - name: Python einrichten
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Notwendige Pakete installieren
+        run: pip install requests Pillow
+
+      - name: Neue Farbe generieren & auf Bluesky posten
+        env:
+          BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
+          BLUESKY_PASSWORD: ${{ secrets.BLUESKY_PASSWORD }}
+        run: python generate_color.py
+
+      - name: Änderungen im Repository speichern
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add colors.json
+          git commit -m "Automatischer Farbwechsel & Bluesky Post" || exit 0
+          git pull --rebase
+          git push
