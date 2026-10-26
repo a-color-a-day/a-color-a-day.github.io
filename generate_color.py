@@ -5,14 +5,47 @@ import os
 import requests
 from PIL import Image
 import io
-
-COLOR_NAMES = ["Azure", "Cerulean", "Crimson", "Emerald", "Indigo", "Magenta", "Ochre", "Saffron", "Scarlet", "Teal", "Vermilion", "Violet", "Amber", "Celeste", "Coral", "Cyan", "Maroon", "Olive"]
-MODIFIERS = ["Vivid", "Deep", "Muted", "Radiant", "Quiet", "Celestial", "Ethereal", "Infinite", "Luminous", "Solitary", "Subtle", "Pure"]
+import colorsys
 
 def generate_color_name(r, g, b):
-    mod_index = (r + g) % len(MODIFIERS)
-    name_index = (g + b) % len(COLOR_NAMES)
-    return f"{MODIFIERS[mod_index]} {COLOR_NAMES[name_index]}"
+    # Konvertiere RGB in HLS (Hue, Lightness, Saturation) für präzise Farbnamen
+    rf, gf, bf = r / 255.0, g / 255.0, b / 255.0
+    h, l, s = colorsys.rgb_to_hls(rf, gf, bf)
+    hue = h * 360
+
+    # Bestimme den Modifikator basierend auf Helligkeit und Sättigung
+    if l < 0.2:
+        modifier = "Deep"
+    elif l > 0.82:
+        modifier = "Radiant" if s > 0.3 else "Pale"
+    elif s < 0.15:
+        modifier = "Muted"
+    elif s > 0.75:
+        modifier = "Vivid"
+    else:
+        modifier = "Subtle"
+
+    # Bestimme den Basis-Farbnamen anhand des Farbkreises (Hue 0-360°)
+    if hue < 15 or hue >= 345:
+        base = "Scarlet" if l < 0.5 else "Crimson"
+    elif 15 <= hue < 40:
+        base = "Vermilion" if s > 0.6 else "Amber"
+    elif 40 <= hue < 65:
+        base = "Saffron" if l > 0.5 else "Ochre"
+    elif 65 <= hue < 140:
+        base = "Olive" if l > 0.4 else "Emerald"
+    elif 140 <= hue < 195:
+        base = "Teal" if l < 0.5 else "Cyan"
+    elif 195 <= hue < 250:
+        base = "Cerulean" if l > 0.5 else "Azure"
+    elif 250 <= hue < 290:
+        base = "Violet" if l > 0.5 else "Indigo"
+    elif 290 <= hue < 345:
+        base = "Magenta" if s > 0.5 else "Coral"
+    else:
+        base = "Coral"
+
+    return f"{modifier} {base}"
 
 # Farbhistorie laden
 try:
