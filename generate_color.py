@@ -7,6 +7,9 @@ from PIL import Image
 import io
 import colorsys
 
+SITE_URL = "https://a-color-a-day.github.io/infinity/"
+
+
 def load_color_database():
     """Lädt optional eine lokale Farbdatenbank (z.B. color_database.json)"""
     try:
@@ -15,12 +18,18 @@ def load_color_database():
     except FileNotFoundError:
         return {}
 
+
+def title_case(name):
+    """Jedes Wort mit Großbuchstaben beginnen: 'Deep-sea purple' -> 'Deep-sea Purple'."""
+    return " ".join(w[:1].upper() + w[1:] for w in name.split(" "))
+
+
 def generate_color_name(r, g, b, hex_code):
     # 1. Prüfen, ob der HEX-Code in der großen Farbdatenbank existiert
     color_db = load_color_database()
     hex_lower = hex_code.lower()
     if hex_lower in color_db:
-        return color_db[hex_lower]
+        return title_case(color_db[hex_lower])
 
     # 2. Ansonsten Fallback auf unsere poetische HSL-Logik
     rf, gf, bf = r / 255.0, g / 255.0, b / 255.0
@@ -56,7 +65,20 @@ def generate_color_name(r, g, b, hex_code):
     mod = light_mod[(r + g) % len(light_mod)]
     base = base_names[(g + b) % len(base_names)]
 
-    return f"{mod} {base}"
+    return title_case(f"{mod} {base}")
+
+
+def link_facets(text, url):
+    """Macht die Adresse im Bluesky-Post anklickbar (Bluesky rechnet in Bytes)."""
+    raw = text.encode("utf-8")
+    start = raw.find(url.encode("utf-8"))
+    if start < 0:
+        return []
+    return [{
+        "index": {"byteStart": start, "byteEnd": start + len(url.encode("utf-8"))},
+        "features": [{"$type": "app.bsky.richtext.facet#link", "uri": url}]
+    }]
+
 
 try:
     with open('colors.json', 'r', encoding='utf-8') as f:
@@ -65,16 +87,25 @@ except FileNotFoundError:
     history = []
 
 today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+is_new_entry = False
 
 if history and history[-1].get("date") == today_str:
     latest_entry = history[-1]
     print(f"Using existing color for today: {latest_entry['name']} ({latest_entry['hex']})")
 else:
-    day_number = len(history) + 1
-    r = random.randint(0, 255)
-    g = random.randint(0, 255)
-    b = random.randint(0, 255)
-    hex_code = f"#{r:02X}{g:02X}{b:02X}"
+    is_new_entry = True
+    day_number = max((e.get("day", 0) for e in history), default=0) + 1
+
+    # Jede Farbe kommt nur einmal vor: bereits gezeigte Farben werden übersprungen
+    used_hex = {e.get("hex", "").upper() for e in history}
+    while True:
+        r = random.randint(0, 255)
+        g = random.randint(0, 255)
+        b = random.randint(0, 255)
+        hex_code = f"#{r:02X}{g:02X}{b:02X}"
+        if hex_code not in used_hex:
+            break
+
     color_name = generate_color_name(r, g, b, hex_code)
 
     latest_entry = {
@@ -92,14 +123,20 @@ else:
 
 handle = os.environ.get("BLUESKY_HANDLE")
 password = os.environ.get("BLUESKY_PASSWORD")
+force_post = os.environ.get("FORCE_POST") == "1"
 
-if handle and password:
+if not (handle and password):
+    print("Bluesky credentials not found in environment variables.")
+elif not is_new_entry and not force_post:
+    # Verhindert doppelte Posts, wenn der Lauf am selben Tag nochmal gestartet wird
+    print("Color for today already existed - skipping Bluesky post (set FORCE_POST=1 to post anyway).")
+else:
     try:
         print("Logging in to Bluesky...")
         session_res = requests.post("https://bsky.social/xrpc/com.atproto.server.createSession", json={
             "identifier": handle,
             "password": password
-        })
+        }, timeout=30)
         session_res.raise_for_status()
         session = session_res.json()
         access_token = session["accessJwt"]
@@ -108,15 +145,17 @@ if handle and password:
         print("Generating color image...")
         img = Image.new("RGB", (1080, 1080), tuple(latest_entry["rgb"]))
         img_byte_arr = io.BytesIO()
-        img.save(img_byte_arr, format='JPEG', quality=90)
+        # PNG statt JPEG: verlustfrei, damit die Farbe exakt bleibt
+        img.save(img_byte_arr, format='PNG', optimize=True)
         img_bytes = img_byte_arr.getvalue()
 
         print("Uploading image blob to Bluesky...")
         headers = {
             "Authorization": f"Bearer {access_token}",
-            "Content-Type": "image/jpeg"
+            "Content-Type": "image/png"
         }
-        blob_res = requests.post("https://bsky.social/xrpc/com.atproto.repo.uploadBlob", headers=headers, data=img_bytes)
+        blob_res = requests.post("https://bsky.social/xrpc/com.atproto.repo.uploadBlob",
+                                 headers=headers, data=img_bytes, timeout=60)
         blob_res.raise_for_status()
         blob_data = blob_res.json()["blob"]
 
@@ -126,7 +165,7 @@ if handle and password:
             f"{latest_entry['name']}\n"
             f"{latest_entry['hex']} • RGB ({latest_entry['rgb'][0]}, {latest_entry['rgb'][1]}, {latest_entry['rgb'][2]})\n\n"
             f"\"One small splash of color per day – for eternity.\"\n\n"
-            f"https://a-color-a-day.github.io/infinity/"
+            f"{SITE_URL}"
         )
 
         print("Publishing post to Bluesky...")
@@ -134,6 +173,7 @@ if handle and password:
             "$type": "app.bsky.feed.post",
             "text": text,
             "createdAt": datetime.now(timezone.utc).isoformat(),
+            "facets": link_facets(text, SITE_URL),
             "embed": {
                 "$type": "app.bsky.embed.images",
                 "images": [
@@ -152,11 +192,9 @@ if handle and password:
             "repo": did,
             "collection": "app.bsky.feed.post",
             "record": post_record
-        })
+        }, timeout=30)
         post_res.raise_for_status()
         print("Successfully posted to Bluesky!")
 
     except Exception as e:
         print(f"Error posting to Bluesky: {e}")
-else:
-    print("Bluesky credentials not found in environment variables.")
