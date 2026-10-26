@@ -66,24 +66,28 @@
             Loading...
         </h2>
 
-        <!-- Color Values with direct copy functionality -->
+        <!-- Color Values with clean front icons -->
         <div class="flex flex-col md:flex-row items-center justify-center space-y-3 md:space-y-0 md:space-x-6 text-xl md:text-2xl font-normal opacity-90 color-transition mb-8">
-            <button id="copyHexBtn" class="font-mono btn-ui px-4 py-2 rounded-lg text-lg flex items-center space-x-2 transition hover:scale-105" title="Click to copy HEX">
+            <button id="copyHexBtn" class="font-mono btn-ui px-4 py-2 rounded-lg text-lg flex items-center space-x-2.5 transition hover:scale-105 cursor-pointer" title="Click to copy HEX">
+                <svg class="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                </svg>
                 <span id="hexValue">#3A86EF</span>
-                <span id="hexCopyHint" class="text-xs opacity-60 ml-1">(Copy)</span>
             </button>
             <span class="hidden md:inline text-xs opacity-50">•</span>
-            <button id="copyRgbBtn" class="font-mono btn-ui px-4 py-2 rounded-lg text-lg flex items-center space-x-2 transition hover:scale-105" title="Click to copy RGB">
+            <button id="copyRgbBtn" class="font-mono btn-ui px-4 py-2 rounded-lg text-lg flex items-center space-x-2.5 transition hover:scale-105 cursor-pointer" title="Click to copy RGB">
+                <svg class="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                </svg>
                 <span id="rgbValue">RGB (58, 134, 239)</span>
-                <span id="rgbCopyHint" class="text-xs opacity-60 ml-1">(Copy)</span>
             </button>
         </div>
 
-        <!-- Action Controls -->
+        <!-- Action Controls with Shuffle Icon -->
         <div class="flex items-center space-x-3">
-            <button id="randomBtn" class="btn-ui color-transition px-5 py-2.5 rounded-lg text-sm font-medium flex items-center space-x-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            <button id="randomBtn" class="btn-ui color-transition px-5 py-2.5 rounded-lg text-sm font-medium flex items-center space-x-2.5 cursor-pointer">
+                <svg class="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
                 </svg>
                 <span>Explore Random</span>
             </button>
@@ -94,159 +98,4 @@
     <footer class="flex flex-col md:flex-row justify-between items-center w-full max-w-7xl mx-auto z-10 text-xs opacity-75 space-y-2 md:space-y-0 color-transition">
         <p>A 45,000-year artwork celebrating infinity and patience.</p>
         <div class="flex items-center space-x-4">
-            <button id="imprintBtn" class="hover:underline bg-transparent border-none cursor-pointer">Imprint</button>
-            <span id="dateDisplay">October 25, 2026</span>
-        </div>
-    </footer>
-
-    <!-- About Modal -->
-    <div id="aboutModal" class="fixed inset-0 bg-black/60 backdrop-blur-md hidden z-50 flex items-center justify-center p-6">
-        <div class="bg-neutral-900 text-white rounded-lg p-8 max-w-xl w-full max-h-[85vh] flex flex-col shadow-2xl">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold tracking-wide">The Endless Journey</h3>
-                <button id="closeAbout" class="text-neutral-400 hover:text-white text-2xl font-bold">&times;</button>
-            </div>
-            <div class="space-y-4 text-sm text-neutral-300 overflow-y-auto pr-2 leading-relaxed">
-                <p>Imagine we enter a boundless world – the world of colors. In this world there are 16,777,216 unique color nuances, each defined by its individual blend of red, green and blue (RGB). Each of these shades tells its own story, evokes its own emotion, is a little piece of magic.</p>
-                <p>The idea is as simple as it is fascinating: Every day we generate a completely random RGB hue and share it with you. A small moment of surprise that reminds us how diverse and beautiful the world around us is.</p>
-                <p>Why? Because it is a journey that will last for generations. A new shade every day – and it would take more than 45,000 years to post all RGB colors. It is a tribute to infinity and patience, a creative experiment that makes us pause and shows us how unique every moment, every day is.</p>
-                <p class="font-medium text-white pt-2">Will you be part of this journey? Immerse yourself with us in the world of colors. Let yourself be surprised, inspired, and discover beauty in the seemingly simple – day by day, shade by shade.</p>
-                <p class="italic text-neutral-400 pt-2 text-center">"One small splash of color per day – for eternity."</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Archive Modal -->
-    <div id="archiveModal" class="fixed inset-0 bg-black/60 backdrop-blur-md hidden z-50 flex items-center justify-center p-6">
-        <div class="bg-neutral-900 text-white rounded-lg p-6 max-w-2xl w-full max-h-[80vh] flex flex-col">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold">Past Colors Mosaic</h3>
-                <button id="closeArchive" class="text-neutral-400 hover:text-white text-2xl font-bold">&times;</button>
-            </div>
-            <p class="text-sm text-neutral-400 mb-4">A growing mosaic of days passed.</p>
-            <div id="mosaicGrid" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 overflow-y-auto p-2 bg-neutral-950 rounded-lg flex-1 min-h-[200px]"></div>
-        </div>
-    </div>
-
-    <!-- Imprint Modal -->
-    <div id="imprintModal" class="fixed inset-0 bg-black/60 backdrop-blur-md hidden z-50 flex items-center justify-center p-6">
-        <div class="bg-neutral-900 text-white rounded-lg p-6 max-w-md w-full flex flex-col">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold">Imprint / Legal Notice</h3>
-                <button id="closeImprint" class="text-neutral-400 hover:text-white text-2xl font-bold">&times;</button>
-            </div>
-            <div class="text-sm text-neutral-300 space-y-3">
-                <p><strong>Information according to § 5 TMG:</strong></p>
-                <p>Thomas Schlembach<br>Kleinmachnow, Deutschland</p>
-                <p><strong>Contact:</strong><br>E-Mail: <a href="mailto:thomas.schlembach@posteo.de" class="underline hover:text-white">thomas.schlembach@posteo.de</a></p>
-                <p class="text-xs text-neutral-500 pt-4">This is a private, non-commercial art project celebrating color and infinity.</p>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let colorHistory = [];
-
-        function getLuminance(r, g, b) {
-            const a = [r, g, b].map(v => {
-                v /= 255;
-                return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
-            });
-            return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
-        }
-
-        function applyColor(item, isRandom = false, customDay = null) {
-            const { r, g, b, hex, name, day, date } = item;
-            
-            document.body.style.backgroundColor = hex;
-
-            const luminance = getLuminance(r, g, b);
-            if (luminance > 0.45) {
-                document.body.style.color = "#111827";
-                document.body.classList.add("dark-mode");
-            } else {
-                document.body.style.color = "#FFFFFF";
-                document.body.classList.remove("dark-mode");
-            }
-
-            document.getElementById('colorName').innerText = name;
-            document.getElementById('hexValue').innerText = hex;
-            document.getElementById('rgbValue').innerText = `RGB (${r}, ${g}, ${b})`;
-            
-            const displayDay = customDay !== null ? customDay : day;
-            document.getElementById('dayCounter').innerText = `Day ${String(displayDay).padStart(5, '0')} / 16,777,216`;
-            if (date) {
-                document.getElementById('dateDisplay').innerText = date;
-            }
-        }
-
-        async function loadColors() {
-            try {
-                const response = await fetch('colors.json?' + new Date().getTime());
-                colorHistory = await response.json();
-                if (colorHistory.length > 0) {
-                    const latest = colorHistory[colorHistory.length - 1];
-                    applyColor(latest);
-                    renderMosaic();
-                }
-            } catch (e) {
-                applyColor({ r: 58, g: 134, b: 239, hex: "#3A86EF", name: "Vivid Celeste", day: 1, date: "2026-10-25" });
-            }
-        }
-
-        function renderMosaic() {
-            const grid = document.getElementById('mosaicGrid');
-            grid.innerHTML = '';
-            colorHistory.forEach((item, index) => {
-                const tile = document.createElement('div');
-                tile.className = 'aspect-square rounded-md cursor-pointer transition-transform hover:scale-105';
-                tile.style.backgroundColor = item.hex;
-                tile.title = `Day ${index + 1}: ${item.name} (${item.hex})`;
-                tile.onclick = () => {
-                    applyColor(item, false, index + 1);
-                    document.getElementById('archiveModal').classList.add('hidden');
-                };
-                grid.appendChild(tile);
-            });
-        }
-
-        // Separates Kopieren für HEX
-        document.getElementById('copyHexBtn').addEventListener('click', () => {
-            const hex = document.getElementById('hexValue').innerText;
-            navigator.clipboard.writeText(hex).then(() => {
-                const hint = document.getElementById('hexCopyHint');
-                hint.innerText = '(Copied!)';
-                setTimeout(() => hint.innerText = '(Copy)', 2000);
-            });
-        });
-
-        // Separates Kopieren für RGB
-        document.getElementById('copyRgbBtn').addEventListener('click', () => {
-            const rgb = document.getElementById('rgbValue').innerText;
-            navigator.clipboard.writeText(rgb).then(() => {
-                const hint = document.getElementById('rgbCopyHint');
-                hint.innerText = '(Copied!)';
-                setTimeout(() => hint.innerText = '(Copy)', 2000);
-            });
-        });
-
-        document.getElementById('randomBtn').addEventListener('click', () => {
-            if(colorHistory.length === 0) return;
-            const randomItem = colorHistory[Math.floor(Math.random() * colorHistory.length)];
-            const randomDay = Math.floor(Math.random() * 16777216) + 1;
-            applyColor(randomItem, true, randomDay);
-        });
-
-        document.getElementById('infoBtn').addEventListener('click', () => document.getElementById('aboutModal').classList.remove('hidden'));
-        document.getElementById('closeAbout').addEventListener('click', () => document.getElementById('aboutModal').classList.add('hidden'));
-
-        document.getElementById('archiveBtn').addEventListener('click', () => document.getElementById('archiveModal').classList.remove('hidden'));
-        document.getElementById('closeArchive').addEventListener('click', () => document.getElementById('archiveModal').classList.add('hidden'));
-
-        document.getElementById('imprintBtn').addEventListener('click', () => document.getElementById('imprintModal').classList.remove('hidden'));
-        document.getElementById('closeImprint').addEventListener('click', () => document.getElementById('imprintModal').classList.add('hidden'));
-
-        loadColors();
-    </script>
-</body>
-</html>
+            <button id="imprintBtn" class="hover:underline bg-transparent border-none
