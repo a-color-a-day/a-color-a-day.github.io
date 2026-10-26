@@ -79,13 +79,9 @@ except FileNotFoundError:
     history = []
 
 today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-is_new_entry = False
 
-if history and history[-1].get("date") == today_str:
-    latest_entry = history[-1]
-    print(f"Using existing color for today: {latest_entry['name']} ({latest_entry['hex']})")
-else:
-    is_new_entry = True
+# 1. Prüfen, ob für heute bereits eine Farbe in der History existiert. Wenn nicht, generieren.
+if not history or history[-1].get("date") != today_str:
     day_number = max((e.get("day", 0) for e in history), default=0) + 1
 
     used_hex = {e.get("hex", "").upper() for e in history}
@@ -99,66 +95,82 @@ else:
 
     color_name = generate_color_name(r, g, b, hex_code)
 
-    latest_entry = {
+    new_entry = {
         "day": day_number,
         "date": today_str,
         "hex": hex_code,
         "rgb": [r, g, b],
-        "name": color_name
+        "name": color_name,
+        "posted_bluesky": False,
+        "posted_mastodon": False
     }
-    history.append(latest_entry)
-
-    with open('colors.json', 'w', encoding='utf-8') as f:
-        json.dump(history, f, indent=2, ensure_ascii=False)
+    history.append(new_entry)
     print(f"Generated Day {day_number}: {color_name} ({hex_code})")
 
-# Bild im Speicher generieren (einmalig für alle Plattformen)
-img = Image.new("RGB", (1080, 1080), tuple(latest_entry["rgb"]))
-img_byte_arr = io.BytesIO()
-img.save(img_byte_arr, format='PNG', optimize=True)
-img_bytes = img_byte_arr.getvalue()
+# 2. Sicherstellen, dass ältere Einträge die Status-Flags besitzen.
+# Da Bluesky bei dir bereits läuft, setzen wir 'posted_bluesky' für alte Einträge auf True.
+# Da Mastodon neu ist, lassen wir 'posted_mastodon' für Tag 1 & 2 auf False, damit sie dort nachgeholt werden!
+for entry in history:
+    if "posted_bluesky" not in entry:
+        entry["posted_bluesky"] = True
+    if "posted_mastodon" not in entry:
+        entry["posted_mastodon"] = False
 
-day_str = str(latest_entry['day']).zfill(5)
-text = (
-    f"Day {day_str} / 16,777,216\n"
-    f"{latest_entry['name']}\n"
-    f"{latest_entry['hex']} • RGB ({latest_entry['rgb'][0]}, {latest_entry['rgb'][1]}, {latest_entry['rgb'][2]})\n\n"
-    f"\"One small splash of color per day – for eternity.\"\n\n"
-    f"{SITE_URL}"
-)
+# Credentials einlesen
+bsky_handle = os.environ.get("BLUESKY_HANDLE")
+bsky_password = os.environ.get("BLUESKY_PASSWORD")
+mastodon_token = os.environ.get("MASTODON_ACCESS_TOKEN")
+mastodon_url = os.environ.get("MASTODON_API_BASE_URL")
 
-force_post = os.environ.get("FORCE_POST") == "1"
+# Bluesky Session vorbereiten (falls Zugangsdaten da sind)
+bluesky_session = None
+if bsky_handle and bsky_password:
+    try:
+        print("Logging in to Bluesky...")
+        session_res = requests.post("https://bsky.social/xrpc/com.atproto.server.createSession", json={
+            "identifier": bsky_handle,
+            "password": bsky_password
+        }, timeout=30)
+        session_res.raise_for_status()
+        bluesky_session = session_res.json()
+    except Exception as e:
+        print(f"Bluesky Login Error: {e}")
 
-# --- 1. BLUESKY POSTING ---
-handle = os.environ.get("BLUESKY_HANDLE")
-password = os.environ.get("BLUESKY_PASSWORD")
+# 3. Alle Einträge durchgehen und fehlende Posts (inklusive Nachholen für Mastodon ab Tag 1) ausführen
+updated = False
 
-if handle and password:
-    if not is_new_entry and not force_post:
-        print("Color for today already existed - skipping Bluesky post.")
-    else:
+for entry in history:
+    day_str = str(entry['day']).zfill(5)
+    r, g, b = entry['rgb']
+    hex_code = entry['hex']
+    name = entry['name']
+    
+    text = (
+        f"Day {day_str} / 16,777,216\n"
+        f"{name}\n"
+        f"{hex_code} • RGB ({r}, {g}, {b})\n\n"
+        f"\"One small splash of color per day – for eternity.\"\n\n"
+        f"{SITE_URL}"
+    )
+
+    # Bild für diesen Eintrag verlustfrei im Speicher erzeugen
+    img = Image.new("RGB", (1080, 1080), (r, g, b))
+    img_byte_arr = io.BytesIO()
+    img.save(img_byte_arr, format='PNG', optimize=True)
+    img_bytes = img_byte_arr.getvalue()
+
+    # --- BLUESKY ---
+    if bsky_handle and bsky_password and bluesky_session and not entry.get("posted_bluesky", False):
         try:
-            print("Logging in to Bluesky...")
-            session_res = requests.post("https://bsky.social/xrpc/com.atproto.server.createSession", json={
-                "identifier": handle,
-                "password": password
-            }, timeout=30)
-            session_res.raise_for_status()
-            session = session_res.json()
-            access_token = session["accessJwt"]
-            did = session["did"]
+            print(f"Posting Day {entry['day']} to Bluesky...")
+            access_token = bluesky_session["accessJwt"]
+            did = bluesky_session["did"]
 
-            print("Uploading image blob to Bluesky...")
-            headers = {
-                "Authorization": f"Bearer {access_token}",
-                "Content-Type": "image/png"
-            }
-            blob_res = requests.post("https://bsky.social/xrpc/com.atproto.repo.uploadBlob",
-                                     headers=headers, data=img_bytes, timeout=60)
+            headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "image/png"}
+            blob_res = requests.post("https://bsky.social/xrpc/com.atproto.repo.uploadBlob", headers=headers, data=img_bytes, timeout=60)
             blob_res.raise_for_status()
             blob_data = blob_res.json()["blob"]
 
-            print("Publishing post to Bluesky...")
             post_record = {
                 "$type": "app.bsky.feed.post",
                 "text": text,
@@ -166,12 +178,7 @@ if handle and password:
                 "facets": link_facets(text, SITE_URL),
                 "embed": {
                     "$type": "app.bsky.embed.images",
-                    "images": [
-                        {
-                            "alt": f"{latest_entry['name']} ({latest_entry['hex']})",
-                            "image": blob_data
-                        }
-                    ]
+                    "images": [{"alt": f"{name} ({hex_code})", "image": blob_data}]
                 }
             }
 
@@ -184,33 +191,38 @@ if handle and password:
                 "record": post_record
             }, timeout=30)
             post_res.raise_for_status()
-            print("Successfully posted to Bluesky!")
+            
+            entry["posted_bluesky"] = True
+            updated = True
+            print(f"Successfully posted Day {entry['day']} to Bluesky!")
         except Exception as e:
-            print(f"Error posting to Bluesky: {e}")
+            print(f"Error posting Day {entry['day']} to Bluesky: {e}")
 
-# --- 2. MASTODON POSTING ---
-mastodon_token = os.environ.get("MASTODON_ACCESS_TOKEN")
-mastodon_url = os.environ.get("MASTODON_API_BASE_URL")
-
-if mastodon_token and mastodon_url:
-    if not is_new_entry and not force_post:
-        print("Color for today already existed - skipping Mastodon post.")
-    else:
+    # --- MASTODON (holt Tag 1 & 2 nach) ---
+    if mastodon_token and mastodon_url and not entry.get("posted_mastodon", False):
         try:
-            print("Uploading image to Mastodon...")
+            print(f"Posting Day {entry['day']} to Mastodon...")
             media_headers = {"Authorization": f"Bearer {mastodon_token}"}
             files = {"file": ("color.png", img_bytes, "image/png")}
             media_res = requests.post(f"{mastodon_url}/api/v1/media", headers=media_headers, files=files, timeout=60)
             media_res.raise_for_status()
             media_id = media_res.json()["id"]
 
-            print("Publishing post to Mastodon...")
             status_data = {
                 "status": text,
                 "media_ids": [media_id]
             }
             status_res = requests.post(f"{mastodon_url}/api/v1/statuses", headers=media_headers, json=status_data, timeout=30)
             status_res.raise_for_status()
-            print("Successfully posted to Mastodon!")
+            
+            entry["posted_mastodon"] = True
+            updated = True
+            print(f"Successfully posted Day {entry['day']} to Mastodon!")
         except Exception as e:
-            print(f"Error posting to Mastodon: {e}")
+            print(f"Error posting Day {entry['day']} to Mastodon: {e}")
+
+# 4. History und Post-Status in colors.json speichern
+if updated:
+    with open('colors.json', 'w', encoding='utf-8') as f:
+        json.dump(history, f, indent=2, ensure_ascii=False)
+    print("colors.json and post statuses updated successfully.")
