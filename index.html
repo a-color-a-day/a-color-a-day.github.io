@@ -79,4 +79,32 @@
             <span class="hidden md:inline text-xs opacity-50">•</span>
             <button id="copyRgbBtn" class="font-mono btn-ui px-4 py-2 rounded-lg text-lg flex items-center space-x-2.5 transition hover:scale-105 cursor-pointer" title="Click to copy RGB">
                 <svg class="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                </svg>
+                <span id="rgbValue">RGB (55, 43, 172)</span>
+            </button>
+        </div>
+
+        <!-- Action Controls with Intersecting Shuffle Icon -->
+        <div class="flex items-center space-x-3">
+            <button id="randomBtn" class="btn-ui color-transition px-5 py-2.5 rounded-lg text-sm font-medium flex items-center space-x-2.5 cursor-pointer">
+                <svg class="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"></path>
+                </svg>
+                <span>Explore Random</span>
+            </button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="flex flex-col md:flex-row justify-between items-center w-full max-w-7xl mx-auto z-10 text-xs opacity-75 space-y-2 md:space-y-0 color-transition">
+        <p>A 45,000-year artwork celebrating infinity and patience.</p>
+        <div class="flex items-center space-x-4">
+            <button id="imprintBtn" class="hover:underline bg-transparent border-none cursor-pointer">Imprint</button>
+            <span id="dateDisplay">October 26, 2026</span>
+        </div>
+    </footer>
+
+    <!-- About Modal -->
+    <div id="aboutModal" class="fixed inset-0 bg-black/60 backdrop-blur-md hidden z-50 flex items-center justify-center p-6">
+        <div class="bg-neutral-900 text-white rounded-lg p-8 max-w-xl w-full max-h-
