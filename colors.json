@@ -9,5 +9,16 @@
       197
     ],
     "name": "Infinite Scarlet"
+  },
+  {
+    "day": 2,
+    "date": "2026-10-26",
+    "hex": "#372BAC",
+    "rgb": [
+      55,
+      43,
+      172
+    ],
+    "name": "Muted Olive"
   }
 ]
