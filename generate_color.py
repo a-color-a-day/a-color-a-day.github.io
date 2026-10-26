@@ -7,7 +7,22 @@ from PIL import Image
 import io
 import colorsys
 
-def generate_color_name(r, g, b):
+def load_color_database():
+    """Lädt optional eine lokale Farbdatenbank (z.B. color_database.json)"""
+    try:
+        with open('color_database.json', 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {}
+
+def generate_color_name(r, g, b, hex_code):
+    # 1. Prüfen, ob der HEX-Code in der großen Farbdatenbank existiert
+    color_db = load_color_database()
+    hex_lower = hex_code.lower()
+    if hex_lower in color_db:
+        return color_db[hex_lower]
+
+    # 2. Ansonsten Fallback auf unsere poetische HSL-Logik
     rf, gf, bf = r / 255.0, g / 255.0, b / 255.0
     h, l, s = colorsys.rgb_to_hls(rf, gf, bf)
     hue = h * 360
@@ -60,7 +75,7 @@ else:
     g = random.randint(0, 255)
     b = random.randint(0, 255)
     hex_code = f"#{r:02X}{g:02X}{b:02X}"
-    color_name = generate_color_name(r, g, b)
+    color_name = generate_color_name(r, g, b, hex_code)
 
     latest_entry = {
         "day": day_number,
