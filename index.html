@@ -10,29 +10,38 @@
 <body class="min-h-screen flex flex-col justify-between p-6 md:p-12 select-none overflow-x-hidden">
 
     <!-- Header Navigation -->
-    <header class="flex justify-between items-center w-full max-w-7xl mx-auto z-10 color-transition">
-        <div class="flex items-center space-x-3">
-            <h1 class="text-base font-bold tracking-wider uppercase">a color a day</h1>
+    <header class="flex justify-between items-center gap-3 w-full max-w-7xl mx-auto z-10 color-transition">
+        <div class="flex items-center space-x-3 ui-hide">
+            <h1 class="text-sm sm:text-base font-bold tracking-wider uppercase">a color a day</h1>
         </div>
 
-        <div class="flex items-center space-x-3">
-            <button id="infoBtn" class="btn-ui color-transition px-4 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 cursor-pointer">
+        <div class="flex items-center space-x-2 sm:space-x-3 shrink-0">
+            <button id="infoBtn" class="ui-hide btn-ui color-transition px-3 sm:px-4 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 cursor-pointer">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
                 <span>About</span>
             </button>
-            <button id="archiveBtn" class="btn-ui color-transition px-4 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 cursor-pointer">
+            <button id="archiveBtn" class="ui-hide btn-ui color-transition px-3 sm:px-4 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 cursor-pointer">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
                 </svg>
                 <span>Archive</span>
             </button>
+            <button id="hideBtn" class="btn-ui color-transition w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-lg flex items-center justify-center cursor-pointer" title="Hide text (H)" aria-label="Hide text" aria-pressed="false">
+                <svg id="iconEye" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                </svg>
+                <svg id="iconEyeOff" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
+                </svg>
+            </button>
         </div>
     </header>
 
     <!-- Main Content Display -->
-    <main class="my-auto flex flex-col items-center justify-center text-center z-10 my-12">
+    <main class="ui-hide my-auto flex flex-col items-center justify-center text-center z-10 my-12">
         <p id="dayCounter" class="text-base font-medium tracking-widest opacity-80 mb-3 color-transition">
             Day 00002 / 16,777,216
         </p>
@@ -70,7 +79,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="flex flex-col md:flex-row justify-between items-center w-full max-w-7xl mx-auto z-10 text-xs opacity-75 space-y-2 md:space-y-0 color-transition">
+    <footer class="ui-hide flex flex-col md:flex-row justify-between items-center w-full max-w-7xl mx-auto z-10 text-xs opacity-75 space-y-2 md:space-y-0 color-transition">
         <p>A 45,000-year artwork celebrating infinity and patience.</p>
         <div class="flex items-center space-x-4">
             <button id="imprintBtn" class="hover:underline bg-transparent border-none cursor-pointer">Imprint</button>
@@ -92,6 +101,7 @@
                 <p>Why? Because it is a journey that will last for generations. A new shade every day – and it would take more than 45,000 years to post all RGB colors. It is a tribute to infinity and patience, a creative experiment that makes us pause and shows us how unique every moment, every day is.</p>
                 <p class="font-medium text-white pt-2">Will you be part of this journey? Immerse yourself with us in the world of colors. Let yourself be surprised, inspired, and discover beauty in the seemingly simple – day by day, shade by shade.</p>
                 <p class="italic text-neutral-400 pt-2 text-center">"One small splash of color per day – for eternity."</p>
+                <p class="text-xs text-neutral-500 pt-2 text-center">Color names, where an established name exists: <a href="https://github.com/meodai/color-names" target="_blank" rel="noopener noreferrer" class="underline hover:text-white">color-name-list</a> by David Aerne (MIT License).</p>
             </div>
         </div>
     </div>
@@ -306,6 +316,30 @@
             safeListen('closeArchive', 'click', () => {
                 const m = document.getElementById('archiveModal');
                 if (m) m.style.display = 'none';
+            });
+
+            // Text ausblenden: nur die Farbe bleibt sichtbar
+            const hideBtn = document.getElementById('hideBtn');
+            function isHidden() { return document.body.classList.contains('ui-hidden'); }
+            function setHidden(hide) {
+                document.body.classList.toggle('ui-hidden', hide);
+                if (!hideBtn) return;
+                hideBtn.setAttribute('aria-pressed', hide ? 'true' : 'false');
+                hideBtn.setAttribute('aria-label', hide ? 'Show text' : 'Hide text');
+                hideBtn.title = hide ? 'Show text (H)' : 'Hide text (H)';
+                document.getElementById('iconEye').classList.toggle('hidden', hide);
+                document.getElementById('iconEyeOff').classList.toggle('hidden', !hide);
+            }
+            safeListen('hideBtn', 'click', (e) => {
+                e.stopPropagation();
+                setHidden(!isHidden());
+            });
+            // Wenn ausgeblendet: Klick/Tipp irgendwo (oder Esc) blendet alles wieder ein
+            document.addEventListener('click', () => { if (isHidden()) setHidden(false); });
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey || e.metaKey || e.altKey) return;
+                if (e.key === 'h' || e.key === 'H') setHidden(!isHidden());
+                else if (e.key === 'Escape' && isHidden()) setHidden(false);
             });
 
             safeListen('imprintBtn', 'click', () => {
