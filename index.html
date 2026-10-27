@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>a color a day</title>
+    <meta name="description" content="One small splash of color per day – for eternity. A new random RGB color every day.">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="a color a day">
+    <meta property="og:description" content="One small splash of color per day – for eternity.">
+    <meta property="og:url" content="https://a-color-a-day.github.io/infinity/">
+    <meta property="og:image" content="https://a-color-a-day.github.io/infinity/latest.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="alternate" type="application/rss+xml" title="a color a day" href="feed.xml">
+    <!-- Pinterest: Hier den Bestätigungs-Code von Pinterest einfügen (Zeile ohne Kommentarzeichen), z. B.:
+    <meta name="p:domain_verify" content="DEIN_CODE">
+    -->
     <link rel="icon" href="data:,">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -42,7 +53,7 @@
 
     <!-- Main Content Display -->
     <main class="ui-hide my-auto flex flex-col items-center justify-center text-center z-10 my-12">
-        <p id="dayCounter" class="text-base font-medium tracking-widest opacity-80 mb-3 color-transition">
+        <p id="dayCounter" class="text-base font-medium tracking-widest mb-3 color-transition">
             Day 00002 / 16,777,216
         </p>
 
@@ -51,7 +62,7 @@
         </h2>
 
         <!-- Color Values -->
-        <div class="flex flex-col md:flex-row items-center justify-center space-y-3 md:space-y-0 md:space-x-6 text-xl md:text-2xl font-normal opacity-90 color-transition mb-8">
+        <div class="flex flex-col md:flex-row items-center justify-center space-y-3 md:space-y-0 md:space-x-6 text-xl md:text-2xl font-normal color-transition mb-8">
             <button id="copyHexBtn" class="font-mono btn-ui px-4 py-2 rounded-lg text-lg flex items-center space-x-2.5 transition hover:scale-105 cursor-pointer" title="Click to copy HEX">
                 <svg class="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
@@ -76,10 +87,32 @@
                 <span>Explore Random</span>
             </button>
         </div>
+
+        <!-- Social links & share (plain links: no data is sent to anyone until you click) -->
+        <div class="flex items-center justify-center space-x-3 mt-6">
+            <a href="https://bsky.app/profile/acoloraday.bsky.social" target="_blank" rel="noopener noreferrer" class="btn-ui color-transition w-10 h-10 rounded-lg flex items-center justify-center cursor-pointer opacity-80 hover:opacity-100" title="Bluesky" aria-label="Bluesky">
+                <svg class="w-[18px] h-[18px]" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 10.8c-1.087-2.114-4.046-6.053-6.798-7.995C2.566.944 1.561 1.266.902 1.565.139 1.908 0 3.08 0 3.768c0 .69.378 5.65.624 6.479.815 2.736 3.713 3.66 6.383 3.364.136-.02.275-.039.415-.056-.138.022-.276.04-.415.056-3.912.58-7.387 2.005-2.83 7.078 5.013 5.19 6.87-1.113 7.823-4.308.953 3.195 2.05 9.271 7.733 4.308 4.267-4.308 1.172-6.498-2.74-7.078a8.741 8.741 0 0 1-.415-.056c.14.017.279.036.415.056 2.67.297 5.568-.628 6.383-3.364.246-.828.624-5.79.624-6.478 0-.69-.139-1.861-.902-2.206-.659-.298-1.664-.62-4.3 1.24C16.046 4.748 13.087 8.687 12 10.8Z"/></svg>
+            </a>
+            <a href="https://mastodon.social/@acoloraday" target="_blank" rel="me noopener noreferrer" class="btn-ui color-transition w-10 h-10 rounded-lg flex items-center justify-center cursor-pointer opacity-80 hover:opacity-100" title="Mastodon" aria-label="Mastodon">
+                <svg class="w-[18px] h-[18px]" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M23.268 5.313c-.35-2.578-2.617-4.61-5.304-5.004C17.51.242 15.792 0 11.813 0h-.03c-3.98 0-4.835.242-5.288.309C3.882.692 1.496 2.518.917 5.127.64 6.412.61 7.837.661 9.143c.074 1.874.088 3.745.26 5.611.118 1.24.325 2.47.62 3.68.55 2.237 2.777 4.098 4.96 4.857 2.336.792 4.849.923 7.256.38.265-.061.527-.132.786-.213.585-.184 1.27-.39 1.774-.753a.057.057 0 0 0 .023-.043v-1.809a.052.052 0 0 0-.02-.041.053.053 0 0 0-.046-.01 20.282 20.282 0 0 1-4.709.545c-2.73 0-3.463-1.284-3.674-1.818a5.593 5.593 0 0 1-.319-1.433.053.053 0 0 1 .066-.054c1.517.363 3.072.546 4.632.546.376 0 .75 0 1.125-.01 1.57-.044 3.224-.124 4.768-.422.038-.008.077-.015.11-.024 2.435-.464 4.753-1.92 4.989-5.604.008-.145.03-1.52.03-1.67.002-.512.167-3.63-.024-5.545zm-3.748 9.195h-2.561V8.29c0-1.309-.55-1.976-1.67-1.976-1.23 0-1.846.79-1.846 2.35v3.403h-2.546V8.663c0-1.56-.617-2.35-1.848-2.35-1.112 0-1.668.668-1.67 1.977v6.218H4.822V8.102c0-1.31.337-2.35 1.011-3.12.696-.77 1.608-1.164 2.74-1.164 1.311 0 2.302.5 2.962 1.498l.638 1.06.638-1.06c.66-.999 1.65-1.498 2.96-1.498 1.13 0 2.043.395 2.74 1.164.675.77 1.012 1.81 1.012 3.12z"/></svg>
+            </a>
+            <a href="https://de.pinterest.com/acoloraday/" target="_blank" rel="noopener noreferrer" class="btn-ui color-transition w-10 h-10 rounded-lg flex items-center justify-center cursor-pointer opacity-80 hover:opacity-100" title="Pinterest" aria-label="Pinterest">
+                <svg class="w-[18px] h-[18px]" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026L12.017 0z"/></svg>
+            </a>
+            <span class="w-px h-5 bg-current opacity-30" aria-hidden="true"></span>
+            <button id="shareBtn" class="btn-ui color-transition w-10 h-10 rounded-lg flex items-center justify-center cursor-pointer opacity-80 hover:opacity-100" title="Share this color" aria-label="Share this color">
+                <svg id="iconShare" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7M16 6l-4-4m0 0L8 6m4-4v13"></path>
+                </svg>
+                <svg id="iconShareDone" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </button>
+        </div>
     </main>
 
     <!-- Footer -->
-    <footer class="ui-hide flex flex-col md:flex-row justify-between items-center w-full max-w-7xl mx-auto z-10 text-xs opacity-75 space-y-2 md:space-y-0 color-transition">
+    <footer class="ui-hide flex flex-col md:flex-row justify-between items-center w-full max-w-7xl mx-auto z-10 text-xs space-y-2 md:space-y-0 color-transition">
         <p>A 45,000-year artwork celebrating infinity and patience.</p>
         <div class="flex items-center space-x-4">
             <button id="imprintBtn" class="hover:underline bg-transparent border-none cursor-pointer">Imprint</button>
@@ -160,10 +193,13 @@
                 <p class="font-bold text-white pt-2">3. Was diese Seite nicht tut</p>
                 <p>Die Seite setzt keine Cookies, verwendet keine Analyse- oder Tracking-Werkzeuge und speichert nichts in Ihrem Browser. Schriften und Gestaltung werden direkt von dieser Seite geladen, nicht von Servern Dritter. Das Kopieren eines Farbwerts in die Zwischenablage geschieht ausschließlich auf Ihrem Gerät, es werden keine Daten übertragen.</p>
 
-                <p class="font-bold text-white pt-2">4. Kontakt per E-Mail</p>
+                <p class="font-bold text-white pt-2">4. Links zu Bluesky, Mastodon und Pinterest sowie Teilen</p>
+                <p>Die Symbole für Bluesky, Mastodon und Pinterest sind einfache Links. Es werden keine Skripte oder Inhalte dieser Dienste geladen, und es fließen keine Daten an sie, solange Sie nicht klicken. Erst nach einem Klick öffnet sich die jeweilige Seite, dort gelten die Datenschutzbestimmungen des Anbieters. Die Teilen-Funktion nutzt die Teilen-Funktion Ihres Geräts oder kopiert den Link in Ihre Zwischenablage. Dabei wird nichts an mich oder Dritte übertragen.</p>
+
+                <p class="font-bold text-white pt-2">5. Kontakt per E-Mail</p>
                 <p>Wenn Sie mir schreiben, verarbeite ich Ihre E-Mail-Adresse und den Inhalt Ihrer Nachricht, um Ihre Anfrage zu beantworten (Art. 6 Abs. 1 lit. f DSGVO, bei vertragsähnlichem Bezug lit. b). Ich lösche die Nachricht, sobald Ihre Anfrage erledigt ist und keine gesetzlichen Aufbewahrungspflichten entgegenstehen.</p>
 
-                <p class="font-bold text-white pt-2">5. Ihre Rechte</p>
+                <p class="font-bold text-white pt-2">6. Ihre Rechte</p>
                 <p>Sie haben das Recht auf Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung der Verarbeitung (Art. 18), Datenübertragbarkeit (Art. 20) und Widerspruch (Art. 21). Schreiben Sie dafür einfach an die oben genannte E-Mail-Adresse.</p>
                 <p>Sie können sich außerdem bei einer Datenschutz-Aufsichtsbehörde beschweren (Art. 77 DSGVO), zum Beispiel bei der zuständigen Landesbehörde: Die Landesbeauftragte für den Datenschutz und für das Recht auf Akteneinsicht Brandenburg, Stahnsdorfer Damm 77, 14532 Kleinmachnow, <a href="https://www.lda.brandenburg.de" target="_blank" rel="noopener noreferrer" class="underline hover:text-white">www.lda.brandenburg.de</a>.</p>
 
@@ -206,8 +242,28 @@
             return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
         }
 
+        // Kontrastverhältnis nach WCAG (1 = gleich, 21 = Schwarz auf Weiß)
+        function contrastRatio(l1, l2) {
+            const hi = Math.max(l1, l2), lo = Math.min(l1, l2);
+            return (hi + 0.05) / (lo + 0.05);
+        }
+
+        // Fast-Schwarz, damit auch bei mittleren Farben mindestens ca. 4,5:1 erreicht wird
+        const TEXT_LIGHT = '#FFFFFF';
+        const TEXT_DARK = '#050505';
+        const LUM_DARK = getLuminance(5, 5, 5);
+
+        // Wählt Weiß oder Fast-Schwarz, je nachdem, was auf dieser Farbe besser lesbar ist
+        function pickTextColor(r, g, b) {
+            const lum = getLuminance(r, g, b);
+            return contrastRatio(1, lum) >= contrastRatio(lum, LUM_DARK) ? TEXT_LIGHT : TEXT_DARK;
+        }
+
+        let currentItem = null;
+
         function applyColor(item) {
             if (!item) return;
+            currentItem = item;
             const hex = item.hex;
             const name = item.name;
             const day = item.day;
@@ -219,14 +275,9 @@
 
             document.body.style.backgroundColor = hex;
 
-            const luminance = getLuminance(r, g, b);
-            if (luminance > 0.45) {
-                document.body.style.color = "#111827";
-                document.body.classList.add("dark-mode");
-            } else {
-                document.body.style.color = "#FFFFFF";
-                document.body.classList.remove("dark-mode");
-            }
+            const textColor = pickTextColor(r, g, b);
+            document.body.style.color = textColor;
+            document.body.classList.toggle("dark-mode", textColor === TEXT_DARK);
 
             const nameEl = document.getElementById('colorName');
             if (nameEl) nameEl.innerText = name;
@@ -244,6 +295,62 @@
             if (dateEl && date) dateEl.innerText = formatDate(date);
         }
 
+
+        // ---- Link pro Tag: ...#3 zeigt Tag 3 ----
+        function dayFromHash() {
+            const m = /^#(\d+)$/.exec(location.hash);
+            return m ? parseInt(m[1], 10) : null;
+        }
+
+        function showFromHash() {
+            const day = dayFromHash();
+            const item = day !== null ? colorHistory.find(x => Number(x.day) === day) : null;
+            applyColor(item || colorHistory[colorHistory.length - 1]);
+        }
+
+        function selectColor(item) {
+            applyColor(item);
+            try { history.replaceState(null, '', '#' + item.day); } catch (e) {}
+        }
+
+        function currentShareUrl() {
+            const base = location.href.split('#')[0];
+            return currentItem ? base + '#' + currentItem.day : base;
+        }
+
+        async function shareCurrent() {
+            const url = currentShareUrl();
+            const text = currentItem
+                ? `Day ${String(currentItem.day).padStart(5, '0')}: ${currentItem.name} ${currentItem.hex}`
+                : 'a color a day';
+            if (navigator.share) {
+                try {
+                    await navigator.share({ title: 'a color a day', text, url });
+                    return;
+                } catch (e) {
+                    if (e && e.name === 'AbortError') return;
+                }
+            }
+            try {
+                await navigator.clipboard.writeText(url);
+                const btn = document.getElementById('shareBtn');
+                const share = document.getElementById('iconShare');
+                const done = document.getElementById('iconShareDone');
+                if (btn && share && done) {
+                    share.classList.add('hidden');
+                    done.classList.remove('hidden');
+                    btn.title = 'Link copied';
+                    btn.setAttribute('aria-label', 'Link copied');
+                    setTimeout(() => {
+                        share.classList.remove('hidden');
+                        done.classList.add('hidden');
+                        btn.title = 'Share this color';
+                        btn.setAttribute('aria-label', 'Share this color');
+                    }, 1600);
+                }
+            } catch (e) {}
+        }
+
         function renderMosaic() {
             const grid = document.getElementById('mosaicGrid');
             if (!grid) return;
@@ -255,7 +362,7 @@
                 const datePart = item.date ? `, ${formatDate(item.date)}` : '';
                 tile.title = `Day ${item.day}: ${item.name} (${item.hex})${datePart}`;
                 tile.onclick = () => {
-                    applyColor(item);
+                    selectColor(item);
                     const modal = document.getElementById('archiveModal');
                     if (modal) modal.style.display = 'none';
                 };
@@ -264,8 +371,9 @@
         }
 
         async function initApp() {
-            applyColor(colorHistory[colorHistory.length - 1]);
+            showFromHash();
             renderMosaic();
+            window.addEventListener('hashchange', showFromHash);
 
             function safeListen(id, event, callback) {
                 const el = document.getElementById(id);
@@ -297,8 +405,10 @@
             safeListen('randomBtn', 'click', () => {
                 if (colorHistory.length === 0) return;
                 const randomItem = colorHistory[Math.floor(Math.random() * colorHistory.length)];
-                applyColor(randomItem);
+                selectColor(randomItem);
             });
+
+            safeListen('shareBtn', 'click', shareCurrent);
 
             safeListen('infoBtn', 'click', () => {
                 const m = document.getElementById('aboutModal');
@@ -369,7 +479,7 @@
                         : [];
                     if (clean.length > 0) {
                         colorHistory = clean;
-                        applyColor(colorHistory[colorHistory.length - 1]);
+                        showFromHash();
                         renderMosaic();
                     }
                 }
