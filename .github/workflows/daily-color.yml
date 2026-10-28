@@ -2,16 +2,27 @@ name: Daily Color Automation
 
 on:
   schedule:
-    # Täglich kurz nach 00:00 UTC (01:17 / 02:17 Uhr deutsche Zeit).
-    # Bewusst NICHT genau 0:00: Zur vollen Stunde ist GitHub überlastet,
-    # dort starten geplante Läufe oft deutlich verspätet oder gar nicht.
+    # 00:17 UTC: neue Tagesfarbe erzeugen und die Webseite aktualisieren
+    # (01:17 / 02:17 Uhr deutsche Zeit). Bewusst nicht zur vollen Stunde:
+    # Dort ist GitHub überlastet, geplante Läufe starten oft verspätet.
     - cron: '17 0 * * *'
-  workflow_dispatch:      # Manuelles Auslösen zum Testen erlaubt
+    # 12:07 UTC: Posten auf Bluesky und Mastodon (13 / 14 Uhr deutsche Zeit,
+    # morgens an der US-Ostküste, abends in Asien)
+    - cron: '7 12 * * *'
+    # 13:37 UTC: Sicherheitsnetz, falls der Lauf um 12:07 ausgefallen ist.
+    # Wenn schon alles erledigt ist, tut dieser Lauf einfach nichts.
+    - cron: '37 13 * * *'
+  workflow_dispatch:        # Manuelles Auslösen erlaubt
+    inputs:
+      post_now:
+        description: 'Heutige Farbe sofort posten (auch vor 12:00 UTC)?'
+        type: boolean
+        default: false
 
 permissions:
-  contents: write         # WICHTIG: Gibt dem Roboter Schreibrechte für das Archiv
+  contents: write           # Gibt dem Roboter Schreibrechte für das Archiv
 
-# Verhindert, dass zwei Läufe gleichzeitig starten (z. B. manuell + automatisch)
+# Verhindert, dass zwei Läufe gleichzeitig starten
 concurrency:
   group: daily-color
   cancel-in-progress: false
@@ -19,7 +30,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Code auschecken
         uses: actions/checkout@v4
@@ -32,17 +43,20 @@ jobs:
       - name: Notwendige Pakete installieren
         run: pip install requests Pillow
 
-      - name: Neue Farbe generieren & auf Bluesky posten
+      - name: Neue Farbe erzeugen & veröffentlichen
         env:
           BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
           BLUESKY_PASSWORD: ${{ secrets.BLUESKY_PASSWORD }}
+          MASTODON_INSTANCE: ${{ secrets.MASTODON_INSTANCE }}
+          MASTODON_ACCESS_TOKEN: ${{ secrets.MASTODON_ACCESS_TOKEN }}
+          POST_NOW: ${{ github.event.inputs.post_now }}
         run: python generate_color.py
 
       - name: Änderungen im Repository speichern
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add colors.json
-          git commit -m "Automatischer Farbwechsel & Bluesky Post" || exit 0
+          git add colors.json posted.json feed.xml latest.png pins
+          git commit -m "Automatischer Lauf: Farbe, Posts, Pinterest-Feed" || exit 0
           git pull --rebase
           git push
