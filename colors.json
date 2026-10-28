@@ -37,5 +37,16 @@
     "name": "Vivid Emerald",
     "posted_bluesky": true,
     "posted_mastodon": false
+  },
+  {
+    "day": 4,
+    "date": "2026-10-28",
+    "hex": "#2ED68F",
+    "rgb": [
+      46,
+      214,
+      143
+    ],
+    "name": "Radiant Pine"
   }
 ]
