@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+<title>a color a day</title>
+<link>https://a-color-a-day.github.io/infinity/</link>
+<description>One small splash of color per day – for eternity.</description>
+<atom:link href="https://a-color-a-day.github.io/infinity/feed.xml" rel="self" type="application/rss+xml"/>
+<lastBuildDate>Wed, 28 Oct 2026 12:00:00 +0000</lastBuildDate>
+<item>
+<title>Day 00004: Radiant Pine</title>
+<link>https://a-color-a-day.github.io/infinity/#4</link>
+<guid isPermaLink="false">acolorday-4</guid>
+<pubDate>Wed, 28 Oct 2026 12:00:00 +0000</pubDate>
+<description>Radiant Pine – #2ED68F – RGB (46, 214, 143). One small splash of color per day – for eternity. #ColorOfTheDay #Color #Farbe #GenerativeArt</description>
+<enclosure url="https://a-color-a-day.github.io/infinity/pins/day-00004.png" length="6518" type="image/png"/>
+<media:content url="https://a-color-a-day.github.io/infinity/pins/day-00004.png" medium="image" type="image/png" width="1000" height="1500"/>
+</item>
+<item>
+<title>Day 00003: Vivid Emerald</title>
+<link>https://a-color-a-day.github.io/infinity/#3</link>
+<guid isPermaLink="false">acolorday-3</guid>
+<pubDate>Tue, 27 Oct 2026 12:00:00 +0000</pubDate>
+<description>Vivid Emerald – #51AF11 – RGB (81, 175, 17). One small splash of color per day – for eternity. #ColorOfTheDay #Color #Farbe #GenerativeArt</description>
+<enclosure url="https://a-color-a-day.github.io/infinity/pins/day-00003.png" length="6518" type="image/png"/>
+<media:content url="https://a-color-a-day.github.io/infinity/pins/day-00003.png" medium="image" type="image/png" width="1000" height="1500"/>
+</item>
+<item>
+<title>Day 00002: Deep-sea Purple</title>
+<link>https://a-color-a-day.github.io/infinity/#2</link>
+<guid isPermaLink="false">acolorday-2</guid>
+<pubDate>Mon, 26 Oct 2026 12:00:00 +0000</pubDate>
+<description>Deep-sea Purple – #372BAC – RGB (55, 43, 172). One small splash of color per day – for eternity. #ColorOfTheDay #Color #Farbe #GenerativeArt</description>
+<enclosure url="https://a-color-a-day.github.io/infinity/pins/day-00002.png" length="6518" type="image/png"/>
+<media:content url="https://a-color-a-day.github.io/infinity/pins/day-00002.png" medium="image" type="image/png" width="1000" height="1500"/>
+</item>
+<item>
+<title>Day 00001: Lilac Mist</title>
+<link>https://a-color-a-day.github.io/infinity/#1</link>
+<guid isPermaLink="false">acolorday-1</guid>
+<pubDate>Sun, 25 Oct 2026 12:00:00 +0000</pubDate>
+<description>Lilac Mist – #B8ABC5 – RGB (184, 171, 197). One small splash of color per day – for eternity. #ColorOfTheDay #Color #Farbe #GenerativeArt</description>
+<enclosure url="https://a-color-a-day.github.io/infinity/pins/day-00001.png" length="6520" type="image/png"/>
+<media:content url="https://a-color-a-day.github.io/infinity/pins/day-00001.png" medium="image" type="image/png" width="1000" height="1500"/>
+</item>
+</channel>
+</rss>
