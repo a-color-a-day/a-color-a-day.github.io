@@ -48,5 +48,16 @@
       143
     ],
     "name": "Radiant Pine"
+  },
+  {
+    "day": 5,
+    "date": "2026-10-29",
+    "hex": "#A37FB9",
+    "rgb": [
+      163,
+      127,
+      185
+    ],
+    "name": "Radiant Lavender"
   }
 ]
