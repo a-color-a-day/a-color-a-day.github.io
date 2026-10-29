@@ -23,7 +23,7 @@ from PIL import Image
 # ----------------------------------------------------------------------------
 # Einstellungen
 # ----------------------------------------------------------------------------
-SITE_URL = "https://a-color-a-day.github.io/infinity/"
+SITE_URL = "https://a-color-a-day.github.io/"
 QUOTE = "One small splash of color per day – for eternity."
 
 # Hashtags unter jedem Post (ohne #). Reihenfolge = Reihenfolge im Post.
