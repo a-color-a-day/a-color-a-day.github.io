@@ -488,7 +488,18 @@ def post_to_mastodon(pending, posted):
     account_id = me.json()["id"]
     print(f"Mastodon: logged in as {me.json().get('acct', account_id)}.")
 
-    existing = mastodon_existing_days(base, headers, account_id)
+    # Gegenprobe, ob ein Tag schon auf dem Konto steht. Dafür braucht der Zugangsschlüssel ein
+    # Leserecht. Fehlt es (Fehler 401/403), wird ohne Gegenprobe weitergemacht - der Merkzettel
+    # posted.json schützt dann vor doppelten Posts.
+    try:
+        existing = mastodon_existing_days(base, headers, account_id)
+    except requests.HTTPError as e:
+        code = e.response.status_code if e.response is not None else None
+        if code in (401, 403):
+            print(f"Mastodon: the token may not read posts (error {code}) - continuing without the duplicate check.")
+            existing = set()
+        else:
+            raise
 
     for entry in pending:
         day = int(entry["day"])
