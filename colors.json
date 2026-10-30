@@ -59,5 +59,16 @@
       185
     ],
     "name": "Radiant Lavender"
+  },
+  {
+    "day": 6,
+    "date": "2026-10-30",
+    "hex": "#5626CE",
+    "rgb": [
+      86,
+      38,
+      206
+    ],
+    "name": "Luminous Indigo"
   }
 ]
