@@ -70,5 +70,16 @@
       206
     ],
     "name": "Luminous Indigo"
+  },
+  {
+    "day": 7,
+    "date": "2026-10-31",
+    "hex": "#F71FD4",
+    "rgb": [
+      247,
+      31,
+      212
+    ],
+    "name": "Pure Plum"
   }
 ]
