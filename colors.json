@@ -3,94 +3,70 @@
     "day": 1,
     "date": "2026-10-25",
     "hex": "#B8ABC5",
-    "rgb": [
-      184,
-      171,
-      197
-    ],
+    "rgb": [184, 171, 197],
     "name": "Lilac Mist",
     "posted_bluesky": true,
-    "posted_mastodon": false
+    "posted_mastodon": false,
+    "notes": [21, 33, 35, 93, 105]
   },
   {
     "day": 2,
     "date": "2026-10-26",
     "hex": "#372BAC",
-    "rgb": [
-      55,
-      43,
-      172
-    ],
+    "rgb": [55, 43, 172],
     "name": "Deep-sea Purple",
     "posted_bluesky": true,
-    "posted_mastodon": false
+    "posted_mastodon": false,
+    "notes": [41, 63, 67, 81, 87]
   },
   {
     "day": 3,
     "date": "2026-10-27",
     "hex": "#51AF11",
-    "rgb": [
-      81,
-      175,
-      17
-    ],
+    "rgb": [81, 175, 17],
     "name": "Vivid Emerald",
     "posted_bluesky": true,
-    "posted_mastodon": false
+    "posted_mastodon": false,
+    "notes": [28, 36, 74, 90, 96]
   },
   {
     "day": 4,
     "date": "2026-10-28",
     "hex": "#2ED68F",
-    "rgb": [
-      46,
-      214,
-      143
-    ],
-    "name": "Radiant Pine"
+    "rgb": [46, 214, 143],
+    "name": "Radiant Pine",
+    "notes": [31, 59, 67, 74, 95]
   },
   {
     "day": 5,
     "date": "2026-10-29",
     "hex": "#A37FB9",
-    "rgb": [
-      163,
-      127,
-      185
-    ],
-    "name": "Radiant Lavender"
+    "rgb": [163, 127, 185],
+    "name": "Radiant Lavender",
+    "notes": [49, 61, 74, 78, 104]
   },
   {
     "day": 6,
     "date": "2026-10-30",
     "hex": "#5626CE",
-    "rgb": [
-      86,
-      38,
-      206
-    ],
-    "name": "Luminous Indigo"
+    "rgb": [86, 38, 206],
+    "name": "Luminous Indigo",
+    "notes": [35, 71, 89, 96, 101]
   },
   {
     "day": 7,
     "date": "2026-10-31",
     "hex": "#F71FD4",
-    "rgb": [
-      247,
-      31,
-      212
-    ],
-    "name": "Pure Plum"
+    "rgb": [247, 31, 212],
+    "name": "Pure Plum",
+    "notes": [25, 43, 71, 90, 98]
   },
   {
     "day": 8,
     "date": "2026-11-01",
     "hex": "#40FD5D",
-    "rgb": [
-      64,
-      253,
-      93
-    ],
-    "name": "Ethereal Moss"
+    "rgb": [64, 253, 93],
+    "name": "Ethereal Moss",
+    "notes": [47, 50, 57, 78, 96]
   }
 ]
