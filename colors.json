@@ -81,5 +81,16 @@
       212
     ],
     "name": "Pure Plum"
+  },
+  {
+    "day": 8,
+    "date": "2026-11-01",
+    "hex": "#40FD5D",
+    "rgb": [
+      64,
+      253,
+      93
+    ],
+    "name": "Ethereal Moss"
   }
 ]
