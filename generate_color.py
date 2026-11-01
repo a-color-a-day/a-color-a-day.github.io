@@ -42,6 +42,12 @@ NAME_MATCH_TOLERANCE = 1.0
 # So viele der neuesten Tage stehen im Pinterest-Feed.
 FEED_ITEMS = 50
 
+# Klang des Tages: jeden Tag 5 verschiedene Klaviertasten (MIDI 21 = A0 bis 108 = C8), die alle
+# zu einer Dur-Tonleiter passen (egal in welcher der 12 Tonarten und welcher Oktave).
+# Das ergibt 16.115.918 mögliche Zusammenklänge, rund 44.000 Jahre bei einem Klang pro Tag.
+PIANO_LOW, PIANO_HIGH = 21, 108
+CHORD_SIZE = 5
+
 BLUESKY_SERVICE = os.environ.get("BLUESKY_SERVICE", "https://bsky.social").rstrip("/")
 
 DAY_RE = re.compile(r"Day (\d{5}) /")
@@ -172,6 +178,57 @@ def load_history():
         return []
 
 
+# Tonleitern als Bitmasken über die 12 Tonklassen (Dur in allen 12 Tonarten)
+MAJOR_MASKS = [sum(1 << ((root + step) % 12) for step in (0, 2, 4, 5, 7, 9, 11)) for root in range(12)]
+
+
+def chord_fits_a_major_scale(notes):
+    mask = 0
+    for n in notes:
+        mask |= 1 << (n % 12)
+    return any(mask & ~scale == 0 for scale in MAJOR_MASKS)
+
+
+def valid_notes(notes):
+    return (isinstance(notes, list) and len(notes) == CHORD_SIZE and len(set(notes)) == CHORD_SIZE
+            and all(isinstance(n, int) and PIANO_LOW <= n <= PIANO_HIGH for n in notes))
+
+
+def random_chord(used):
+    """Zufällige, noch nie verwendete Auswahl von 5 Tasten, die in eine Dur-Tonleiter passen.
+    Zufällig ziehen und prüfen: So ist jede passende Kombination gleich wahrscheinlich."""
+    while True:
+        notes = sorted(random.sample(range(PIANO_LOW, PIANO_HIGH + 1), CHORD_SIZE))
+        if tuple(notes) not in used and chord_fits_a_major_scale(notes):
+            return notes
+
+
+def used_chords(history):
+    return {tuple(e["notes"]) for e in history if valid_notes(e.get("notes"))}
+
+
+def save_history(history):
+    text = json.dumps(history, indent=2, ensure_ascii=False)
+    # Zahlenlisten (rgb, notes) in einer Zeile halten, damit die Datei übersichtlich bleibt
+    text = re.sub(r"\[\s*(-?\d+(?:\s*,\s*-?\d+)*)\s*\]",
+                  lambda m: "[" + ", ".join(x.strip() for x in m.group(1).split(",")) + "]", text)
+    with open("colors.json", "w", encoding="utf-8") as f:
+        f.write(text + "\n")
+
+
+def ensure_notes(history):
+    """Gibt allen Tagen ohne Klang einen (auch den bisherigen). Liefert True, wenn etwas ergänzt wurde."""
+    changed = False
+    used = used_chords(history)
+    for e in sorted(history, key=lambda e: e.get("day", 0)):
+        if not valid_notes(e.get("notes")):
+            e["notes"] = random_chord(used)
+            used.add(tuple(e["notes"]))
+            changed = True
+            print(f"Added notes for Day {e.get('day')}.")
+    return changed
+
+
 def ensure_today(history, today_str):
     """Stellt sicher, dass es einen Eintrag für heute gibt. Gibt (eintrag, ist_neu) zurück."""
     if history and history[-1].get("date") == today_str:
@@ -197,12 +254,12 @@ def ensure_today(history, today_str):
         "date": today_str,
         "hex": hex_code,
         "rgb": [r, g, b],
-        "name": color_name
+        "name": color_name,
+        "notes": random_chord(used_chords(history))
     }
     history.append(entry)
-    with open('colors.json', 'w', encoding='utf-8') as f:
-        json.dump(history, f, indent=2, ensure_ascii=False)
-    print(f"Generated Day {day_number}: {color_name} ({hex_code})")
+    save_history(history)
+    print(f"Generated Day {day_number}: {color_name} ({hex_code}), notes {entry['notes']}")
     return entry, True
 
 
@@ -544,6 +601,8 @@ def main():
 
     history = load_history()
     ensure_today(history, today_str)
+    if ensure_notes(history):
+        save_history(history)
     update_pinterest_files(history)
 
     posted = load_posted()

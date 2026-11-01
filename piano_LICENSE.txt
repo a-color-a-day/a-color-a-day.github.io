@@ -1,0 +1,11 @@
+Piano sounds used for the daily notes (piano.mp3)
+
+Salamander Grand Piano (Yamaha C5) by Alexander Holm
+Licensed under Creative Commons Attribution 3.0 (CC BY 3.0)
+http://creativecommons.org/licenses/by/3.0/
+
+Source recordings: Tone.js audio repository (github.com/Tonejs/audio, folder "salamander").
+
+Changes made for this project: 30 recordings (every third semitone, A0 to C8)
+trimmed to 4.2 seconds, converted to mono, loudness-matched, faded out, and combined
+into a single MP3 file.

@@ -77,13 +77,16 @@
         </div>
 
         <!-- Action Controls -->
-        <div class="flex items-center space-x-3">
-            <button id="randomBtn" class="btn-ui color-transition px-5 py-2.5 rounded-lg text-sm font-medium flex items-center space-x-2.5 cursor-pointer">
-                <svg class="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"></path>
+        <div class="flex items-center justify-center space-x-5">
+            <button id="soundBtn" class="btn-ui color-transition w-10 h-10 rounded-lg flex items-center justify-center cursor-pointer hidden" title="Listen to the five notes of this day" aria-label="Listen to the five notes of this day">
+                <svg id="iconSound" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707A1 1 0 0112 5.586v12.828a1 1 0 01-1.707.707L5.586 15z"></path>
                 </svg>
-                <span>Explore Random</span>
+                <svg id="iconStop" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="6" y="6" width="12" height="12" rx="2"></rect>
+                </svg>
             </button>
+            <button id="randomBtn" class="text-sm font-medium underline decoration-dotted underline-offset-4 cursor-pointer py-2">Take a color</button>
         </div>
 
         <!-- Social links & share (plain links: no data is sent to anyone until you click) -->
@@ -130,9 +133,12 @@
                 <p>Imagine we enter a boundless world – the world of colors. In this world there are 16,777,216 unique color nuances, each defined by its individual blend of red, green and blue (RGB). Each of these shades tells its own story, evokes its own emotion, is a little piece of magic.</p>
                 <p>The idea is as simple as it is fascinating: Every day we generate a completely random RGB hue and share it with you. A small moment of surprise that reminds us how diverse and beautiful the world around us is.</p>
                 <p>Why? Because it is a journey that will last for generations. A new shade every day – and it would take more than 45,000 years to post all RGB colors. It is a tribute to infinity and patience, a creative experiment that makes us pause and shows us how unique every moment, every day is.</p>
+                <p>Most of what we see online asks us to keep going. This asks us to stop. One color, once a day. Nothing to scroll, nothing to win. Next to 45,000 years, one day is almost nothing, and so are we. Still, every day one color arrives, and you are here to see it. That is enough. If you like, take another one from the past, just for the joy of it.</p>
+                <p>And if you would like to listen: every day also has its own five notes of piano.</p>
                 <p class="font-medium text-white pt-2">Will you be part of this journey? Immerse yourself with us in the world of colors. Let yourself be surprised, inspired, and discover beauty in the seemingly simple – day by day, shade by shade.</p>
                 <p class="italic text-neutral-400 pt-2 text-center">"One small splash of color per day – for eternity."</p>
                 <p class="text-xs text-neutral-500 pt-2 text-center">Color names, where an established name exists: <a href="https://github.com/meodai/color-names" target="_blank" rel="noopener noreferrer" class="underline hover:text-white">color-name-list</a> by David Aerne (MIT License).</p>
+                <p class="text-xs text-neutral-500 pt-1 text-center">Piano sounds: Salamander Grand Piano by Alexander Holm, <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener noreferrer" class="underline hover:text-white">CC BY 3.0</a>.</p>
             </div>
         </div>
     </div>
@@ -229,7 +235,124 @@
                 if (!m) return null;
                 rgb = m.slice(1).map(h => parseInt(h, 16));
             }
-            return { ...item, rgb, name: item.name || item.hex };
+            return { ...item, rgb, name: item.name || item.hex, notes: validNotes(item.notes) ? item.notes : undefined };
+        }
+
+        // ---- Klang des Tages: fünf Klaviertöne ----
+        // piano.mp3 enthält 30 Aufnahmen (alle 3 Halbtöne, A0 bis C8), jede in einem Zeitfenster von 4,5 s.
+        const PIANO_FILE = 'piano.mp3';
+        const PIANO_FIRST = 21;     // MIDI-Nummer der ersten Aufnahme (A0)
+        const PIANO_STEP = 3;
+        const PIANO_COUNT = 30;
+        const PIANO_SLOT = 4.5;     // Sekunden pro Aufnahme in der Datei
+        const PIANO_PLAY = 4.4;     // so lange wird eine Aufnahme gespielt
+        const NOTE_GAP = 0.11;      // sanftes Auffächern von tief nach hoch
+        const NOTE_GAIN = 0.7;
+        const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+
+        let audioCtx = null, pianoBuffer = null, pianoLoading = null;
+        let soundChain = null, soundTimer = null, soundState = 'idle';
+
+        function validNotes(a) {
+            return Array.isArray(a) && a.length > 0 && a.every(n => Number.isInteger(n) && n >= 21 && n <= 108);
+        }
+
+        function noteName(midi) {
+            return NOTE_NAMES[midi % 12] + (Math.floor(midi / 12) - 1);
+        }
+
+        // Plant die Töne auf einem AudioContext ein (auch für Tests mit OfflineAudioContext nutzbar)
+        function scheduleChord(ctx, destination, buffer, notes, t0) {
+            const sorted = [...notes].sort((a, b) => a - b);
+            const sources = [];
+            let end = t0;
+            sorted.forEach((midi, i) => {
+                const idx = Math.max(0, Math.min(PIANO_COUNT - 1, Math.round((midi - PIANO_FIRST) / PIANO_STEP)));
+                const rate = Math.pow(2, (midi - (PIANO_FIRST + idx * PIANO_STEP)) / 12);
+                const src = ctx.createBufferSource();
+                src.buffer = buffer;
+                src.playbackRate.value = rate;
+                const gain = ctx.createGain();
+                gain.gain.value = NOTE_GAIN;
+                src.connect(gain);
+                gain.connect(destination);
+                const when = t0 + i * NOTE_GAP;
+                src.start(when, idx * PIANO_SLOT, PIANO_PLAY);
+                end = Math.max(end, when + PIANO_PLAY / rate);
+                sources.push(src);
+            });
+            return { sources, end };
+        }
+
+        function setSoundState(state) {
+            soundState = state;
+            const btn = document.getElementById('soundBtn');
+            const icon = document.getElementById('iconSound');
+            const stop = document.getElementById('iconStop');
+            if (!btn || !icon || !stop) return;
+            icon.classList.toggle('hidden', state === 'playing');
+            stop.classList.toggle('hidden', state !== 'playing');
+            btn.classList.toggle('animate-pulse', state === 'loading');
+            btn.setAttribute('aria-label', state === 'playing' ? 'Stop' : 'Listen to the five notes of this day');
+        }
+
+        function stopSound() {
+            if (soundTimer) { clearTimeout(soundTimer); soundTimer = null; }
+            if (soundChain && audioCtx) {
+                const chain = soundChain;
+                soundChain = null;
+                try {
+                    const t = audioCtx.currentTime;
+                    chain.master.gain.cancelScheduledValues(t);
+                    chain.master.gain.setValueAtTime(chain.master.gain.value, t);
+                    chain.master.gain.linearRampToValueAtTime(0, t + 0.2);
+                    setTimeout(() => chain.sources.forEach(s => { try { s.stop(); } catch (e) {} }), 300);
+                } catch (e) {}
+            }
+            if (soundState !== 'idle') setSoundState('idle');
+        }
+
+        function updateSoundButton() {
+            const btn = document.getElementById('soundBtn');
+            if (!btn) return;
+            const has = currentItem && validNotes(currentItem.notes);
+            btn.classList.toggle('hidden', !has);
+            if (has) btn.title = 'Listen: ' + [...currentItem.notes].sort((a, b) => a - b).map(noteName).join(' · ');
+        }
+
+        async function toggleSound() {
+            if (soundState === 'playing' || soundState === 'loading') { stopSound(); return; }
+            const item = currentItem;
+            if (!item || !validNotes(item.notes)) return;
+            const AC = window.AudioContext || window.webkitAudioContext;
+            if (!AC) return;
+            if (!audioCtx) audioCtx = new AC();
+            try { await audioCtx.resume(); } catch (e) {}
+            setSoundState('loading');
+            try {
+                if (!pianoBuffer) {
+                    pianoLoading = pianoLoading || fetch(PIANO_FILE)
+                        .then(r => { if (!r.ok) throw new Error('missing'); return r.arrayBuffer(); })
+                        .then(b => audioCtx.decodeAudioData(b));
+                    pianoBuffer = await pianoLoading;
+                }
+            } catch (e) {
+                pianoLoading = null;
+                setSoundState('idle');
+                return;
+            }
+            if (soundState !== 'loading' || currentItem !== item) { if (soundState === 'loading') setSoundState('idle'); return; }
+
+            const compressor = audioCtx.createDynamicsCompressor();
+            const master = audioCtx.createGain();
+            master.gain.value = 0.9;
+            master.connect(compressor);
+            compressor.connect(audioCtx.destination);
+            const { sources, end } = scheduleChord(audioCtx, master, pianoBuffer, item.notes, audioCtx.currentTime + 0.05);
+            soundChain = { master, sources };
+            setSoundState('playing');
+            soundTimer = setTimeout(() => { soundTimer = null; soundChain = null; setSoundState('idle'); },
+                (end - audioCtx.currentTime) * 1000 + 100);
         }
 
         function getLuminance(r, g, b) {
@@ -261,7 +384,9 @@
 
         function applyColor(item) {
             if (!item) return;
+            stopSound();
             currentItem = item;
+            updateSoundButton();
             const hex = item.hex;
             const name = item.name;
             const day = item.day;
@@ -407,6 +532,7 @@
             });
 
             safeListen('shareBtn', 'click', shareCurrent);
+            safeListen('soundBtn', 'click', toggleSound);
 
             safeListen('infoBtn', 'click', () => {
                 const m = document.getElementById('aboutModal');
