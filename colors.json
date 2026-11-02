@@ -68,5 +68,13 @@
     "rgb": [64, 253, 93],
     "name": "Ethereal Moss",
     "notes": [47, 50, 57, 78, 96]
+  },
+  {
+    "day": 9,
+    "date": "2026-11-02",
+    "hex": "#A58E6A",
+    "rgb": [165, 142, 106],
+    "name": "Ethereal Autumn",
+    "notes": [43, 74, 82, 99, 105]
   }
 ]
