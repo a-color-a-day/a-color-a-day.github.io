@@ -76,5 +76,13 @@
     "rgb": [165, 142, 106],
     "name": "Ethereal Autumn",
     "notes": [43, 74, 82, 99, 105]
+  },
+  {
+    "day": 10,
+    "date": "2026-11-03",
+    "hex": "#F77BA8",
+    "rgb": [247, 123, 168],
+    "name": "Radiant Coral",
+    "notes": [44, 47, 70, 82, 90]
   }
 ]
