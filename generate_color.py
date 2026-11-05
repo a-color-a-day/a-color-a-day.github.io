@@ -124,47 +124,193 @@ def title_case(name):
     return " ".join(w[:1].upper() + w[1:] for w in name.split(" "))
 
 
-def generate_color_name(r, g, b, hex_code):
-    # 1. Gibt es schon einen bekannten Namen für diese Farbe? Dann wird er verwendet.
+# ----------------------------------------------------------------------------
+# Wortschatz für die poetischen Farbnamen
+# ----------------------------------------------------------------------------
+# Die Namen werden aus drei Bausteinen zusammengesetzt:
+#   ADJEKTIV  – passt zu Helligkeit und Sättigung der Farbe   (Tabelle ADJECTIVES)
+#   SUBSTANTIV – passt zum Farbton                             (HUE_NOUNS, DARK_NOUNS, LIGHT_NOUNS, NEUTRAL_NOUNS)
+#   STIMMUNG   – ein zweites Substantiv, z. B. "Fern Hush"     (QUALITIES)
+# Wörter, die in den letzten Tagen schon vorkamen, werden möglichst gemieden.
+
+# Helligkeitsstufen: 0 = sehr dunkel ... 4 = sehr hell;  Sättigung: 0 = grau, 1 = gedämpft, 2 = leuchtend
+LIGHTNESS_BOUNDS = (0.18, 0.35, 0.62, 0.80)
+SATURATION_BOUNDS = (0.18, 0.55)
+
+ADJECTIVES = {
+    (0, 0): ["Ashen", "Sooty", "Shadowed", "Charred", "Inky", "Hushed", "Smoldering", "Cindered", "Brooding",
+             "Nocturnal", "Stilled", "Somber", "Veiled", "Weathered", "Coal-dark"],
+    (0, 1): ["Midnight", "Abyssal", "Moonless", "Velvet", "Cavernous", "Secret", "Nocturnal", "Still", "Buried",
+             "Twilit", "Unlit", "Dreaming", "Silent", "Sunken", "Deep-sea"],
+    (0, 2): ["Fathomless", "Opulent", "Regal", "Smoldering", "Imperial", "Lustrous", "Intense", "Jeweled", "Majestic",
+             "Storm-lit", "Resolute", "Sumptuous", "Unfathomed", "Ink-deep", "Stately"],
+    (1, 0): ["Dusky", "Weathered", "Smoky", "Overcast", "Shadowed", "Worn", "Austere", "Pensive", "Faded", "Sober",
+             "Quiet", "Leaden", "Ancient", "Dim", "Time-worn"],
+    (1, 1): ["Dusky", "Twilit", "Hushed", "Earthen", "Mellow", "Antique", "Shaded", "Autumnal", "Contemplative",
+             "Tranquil", "Evening", "Pensive", "Burnished", "Rustic", "Candle-lit"],
+    (1, 2): ["Rich", "Deep", "Jeweled", "Lush", "Resonant", "Burnished", "Sumptuous", "Ardent", "Fervent", "Dense",
+             "Glowing", "Majestic", "Proud", "Smoldering", "Storm-lit"],
+    (2, 0): ["Muted", "Quiet", "Silent", "Dusty", "Faded", "Soft", "Whispering", "Tempered", "Calm", "Pensive",
+             "Subtle", "Tender", "Understated", "Gentle", "Weathered"],
+    (2, 1): ["Gentle", "Mellow", "Tender", "Calm", "Placid", "Serene", "Dreamy", "Natural", "Sunlit", "Pastoral",
+             "Balmy", "Breezy", "Peaceful", "Honest", "Humble", "Mild", "Sun-warmed"],
+    (2, 2): ["Vivid", "Radiant", "Luminous", "Pure", "Bold", "Bright", "Lively", "Brilliant", "Vibrant", "Spirited",
+             "Electric", "Joyful", "Ardent", "Resplendent", "Festive", "Sparkling", "Intense", "Passionate", "Shining",
+             "Flourishing", "Thriving", "Blooming"],
+    (3, 0): ["Pearly", "Silvery", "Misty", "Hazy", "Powdery", "Gossamer", "Feathery", "Veiled", "Frosted", "Ghostly",
+             "Whispered", "Moon-washed", "Dove-soft", "Cloudy"],
+    (3, 1): ["Pastel", "Airy", "Gentle", "Sunlit", "Tender", "Dewy", "Delicate", "Breezy", "Morning", "Fresh", "Soft",
+             "Blithe", "Dreamy", "Silken", "Springtime", "Sweet", "Wistful", "Dew-kissed"],
+    (3, 2): ["Bright", "Sunlit", "Sparkling", "Luminous", "Glowing", "Radiant", "Cheerful", "Lively", "Fresh",
+             "Dazzling", "Shimmering", "Candied", "Joyful", "Effervescent", "Buoyant", "Sunny", "Gleaming", "Jubilant",
+             "Beaming", "Lambent", "Glittering"],
+    (4, 0): ["Ethereal", "Ghostly", "Chalky", "Frosty", "Wan", "Whispering", "Faint", "Gossamer", "Milky", "Bleached",
+             "Feathery", "Snowy", "Hushed", "Veiled", "Snow-dusted"],
+    (4, 1): ["Ethereal", "Airy", "Dewy", "Gossamer", "Feathery", "Milky", "Dawn-lit", "Whispering", "Heavenly",
+             "Silken", "Pearlescent", "Opaline", "Fragile", "Delicate", "Tranquil", "Cloud-soft", "Misty", "Haloed"],
+    (4, 2): ["Ethereal", "Luminous", "Shimmering", "Glowing", "Pearlescent", "Opaline", "Radiant", "Gleaming",
+             "Celestial", "Dazzling", "Sugared", "Iridescent", "Heavenly", "Aglow", "Glimmering", "Starlit", "Lambent"],
+}
+
+# Substantive je Farbton, in 12 Sektoren zu je 30 Grad (Sektor 0 = Rot, dann im Farbkreis weiter)
+HUE_NOUNS = [
+    # 0 Rot
+    ["Scarlet", "Crimson", "Ruby", "Cherry", "Poppy", "Carmine", "Garnet", "Cardinal", "Ember", "Brick", "Cranberry",
+     "Pomegranate", "Rosehip", "Claret", "Maple", "Strawberry", "Cayenne", "Lacquer"],
+    # 1 Orange
+    ["Amber", "Copper", "Rust", "Terracotta", "Persimmon", "Tangerine", "Apricot", "Marigold", "Pumpkin", "Cinnamon",
+     "Clay", "Sienna", "Papaya", "Canyon", "Sunset", "Paprika", "Mango", "Foxfire"],
+    # 2 Gelb
+    ["Saffron", "Honey", "Ochre", "Sunflower", "Gold", "Lemon", "Citrine", "Butter", "Straw", "Daffodil", "Mustard",
+     "Turmeric", "Buttercup", "Topaz", "Custard", "Wheat", "Brass", "Dandelion", "Primrose"],
+    # 3 Gelbgrün
+    ["Lime", "Chartreuse", "Pear", "Olive", "Pistachio", "Citron", "Moss", "Peridot", "Celery", "Kiwi", "Matcha",
+     "Apple", "Meadow", "Lichen", "Willow", "Cactus", "Sprout", "Tendril"],
+    # 4 Grün
+    ["Fern", "Clover", "Meadow", "Emerald", "Forest", "Pine", "Ivy", "Basil", "Juniper", "Sage", "Jade", "Bamboo",
+     "Fir", "Glade", "Leaf", "Shamrock", "Malachite", "Evergreen", "Spruce", "Aloe"],
+    # 5 Grün-Türkis
+    ["Mint", "Jade", "Seafoam", "Spearmint", "Viridian", "Eucalyptus", "Celadon", "Patina", "Malachite", "Kelp",
+     "Sea-glass", "Wintergreen", "Peppermint", "Verdigris", "Juniper", "Basil", "Aloe"],
+    # 6 Türkis/Cyan
+    ["Teal", "Lagoon", "Aqua", "Turquoise", "Glacier", "Tidepool", "Caribbean", "Reef", "Peacock", "Lake", "Surf",
+     "Mermaid", "Arctic", "Pool", "Fjord", "Ice", "Dragonfly", "Seaglass"],
+    # 7 Himmelblau
+    ["Azure", "Sky", "Cerulean", "Cornflower", "Ocean", "Denim", "Horizon", "Glacier", "Tide", "Bluebird", "Harbor",
+     "Bay", "Forget-me-not", "Wave", "Larkspur", "Chambray", "Zenith"],
+    # 8 Blau
+    ["Cobalt", "Sapphire", "Ultramarine", "Indigo", "Navy", "Lapis", "Delft", "Periwinkle", "Midnight", "Iris",
+     "Bluebell", "Storm", "Marine", "Twilight", "Lake", "Azurite", "Prussian"],
+    # 9 Indigo/Violett
+    ["Indigo", "Violet", "Amethyst", "Iris", "Wisteria", "Periwinkle", "Hyacinth", "Lavender", "Twilight", "Aubergine",
+     "Grape", "Lilac", "Heliotrope", "Thistle", "Nightshade", "Plum", "Pansy", "Mauve"],
+    # 10 Purpur/Magenta
+    ["Purple", "Plum", "Orchid", "Mulberry", "Magenta", "Fuchsia", "Heather", "Lilac", "Grape", "Mauve", "Damson",
+     "Peony", "Foxglove", "Bougainvillea", "Aster", "Phlox", "Petunia", "Clematis", "Byzantium"],
+    # 11 Rosa
+    ["Rose", "Blush", "Peony", "Carnation", "Raspberry", "Cerise", "Flamingo", "Camellia", "Hibiscus", "Azalea",
+     "Orchid", "Petal", "Rosewater", "Dahlia", "Lotus", "Sakura", "Cherry-blossom", "Magnolia"],
+]
+
+# Dunkle Töne in Rot bis Gelbgrün sind eher Erdfarben: Dunkelgelb ist kein "Zitrone", sondern Umbra
+DARK_NOUNS = {
+    0: ["Burgundy", "Oxblood", "Garnet", "Claret", "Merlot", "Mahogany", "Maroon", "Cabernet", "Beetroot"],
+    1: ["Umber", "Walnut", "Chestnut", "Cocoa", "Mahogany", "Tobacco", "Leather", "Chocolate", "Cinnamon-bark", "Espresso"],
+    2: ["Bronze", "Peat", "Tea", "Bark", "Umber", "Khaki", "Tobacco", "Antique-gold", "Loam", "Bog"],
+    3: ["Olive", "Moss", "Lichen", "Bog", "Marsh", "Cypress", "Peat", "Seaweed", "Loam"],
+}
+
+# Helle Töne in Rot und Orange sind eher Pfirsich- und Rosatöne
+LIGHT_NOUNS = {
+    0: ["Blush", "Petal", "Rosewater", "Cherry-blossom", "Peony", "Carnation", "Salmon", "Shell", "Rose-quartz"],
+    1: ["Peach", "Apricot", "Cantaloupe", "Cream", "Sherbet", "Melon", "Nectar", "Sandstone", "Seashell"],
+    2: ["Butter", "Cream", "Vanilla", "Lemon-chiffon", "Straw", "Primrose", "Custard", "Sunbeam", "Chamomile"],
+}
+
+# Fast graue Töne: Stein statt Blume
+NEUTRAL_NOUNS = {
+    0: ["Charcoal", "Graphite", "Coal", "Ink", "Soot", "Basalt", "Obsidian", "Slate", "Iron", "Flint", "Ebony", "Tar"],
+    1: ["Slate", "Stone", "Pewter", "Ash", "Flint", "Granite", "Driftwood", "Fog", "Pebble", "Smoke", "Concrete",
+        "Gravel", "Thunder", "Elephant", "Lead"],
+    2: ["Pearl", "Linen", "Bone", "Chalk", "Cloud", "Fog", "Dove", "Moonstone", "Porcelain", "Alabaster", "Mist",
+        "Ivory", "Milk", "Cotton", "Snow"],
+}
+
+# Stimmungswörter für Namen wie "Fern Hush" (nach Helligkeit: 0 dunkel, 1 mittel, 2 hell)
+QUALITIES = {
+    0: ["Shade", "Shadow", "Dusk", "Night", "Depth", "Hollow", "Murmur", "Vault", "Well", "Silence", "Undertow", "Gloom"],
+    1: ["Whisper", "Hush", "Echo", "Bloom", "Drift", "Tide", "Glow", "Song", "Breath", "Spirit", "Dream", "Haze", "Swell"],
+    2: ["Mist", "Haze", "Dawn", "Veil", "Frost", "Breath", "Cloud", "Glimmer", "Halo", "Drift", "Dew", "Daybreak", "Shimmer"],
+}
+
+
+# Wörter, die nur zu hellen Tönen passen (Flieder ist nie dunkel) bzw. nur zu dunklen (Mitternacht ist nie hell)
+PALE_ONLY = {"Lavender", "Lilac", "Blush", "Petal", "Rosewater", "Cherry-blossom", "Sakura", "Mint", "Spearmint",
+             "Peppermint", "Seafoam", "Pistachio", "Butter", "Straw", "Primrose", "Chamomile", "Vanilla", "Cream",
+             "Cotton", "Pearl", "Milk", "Snow", "Ice", "Glacier", "Sky", "Heather", "Wisteria", "Thistle", "Celadon",
+             "Wintergreen", "Sea-glass", "Seaglass", "Lemon-chiffon", "Peach", "Apricot", "Cantaloupe", "Sherbet",
+             "Melon", "Seashell", "Sandstone", "Carnation", "Peony", "Moonstone", "Porcelain", "Alabaster", "Ivory"}
+DARK_ONLY = {"Midnight", "Aubergine", "Nightshade", "Navy", "Prussian", "Burgundy", "Oxblood", "Merlot", "Maroon",
+             "Cabernet", "Beetroot", "Espresso", "Mahogany", "Walnut", "Umber", "Chocolate", "Obsidian", "Ebony",
+             "Charcoal", "Graphite", "Coal", "Soot", "Basalt", "Tar", "Ink", "Peat", "Bog", "Marsh", "Cypress",
+             "Loam", "Claret", "Tobacco", "Leather", "Chestnut", "Cocoa", "Seaweed", "Bark", "Twilight"}
+
+
+def _band(value, bounds):
+    return sum(value >= b for b in bounds)
+
+
+def _fresh(options, recent_words):
+    """Bevorzugt Wörter, die in den letzten Tagen noch nicht vorkamen."""
+    fresh = [o for o in options if o.lower() not in recent_words]
+    return random.choice(fresh or options)
+
+
+def poetic_name(r, g, b, recent_names=(), taken=frozenset()):
+    h, l, s = colorsys.rgb_to_hls(r / 255.0, g / 255.0, b / 255.0)
+    hue = h * 360
+    lb = _band(l, LIGHTNESS_BOUNDS)
+    sb = _band(s, SATURATION_BOUNDS)
+    group = 0 if lb <= 1 else (1 if lb == 2 else 2)       # dunkel / mittel / hell
+    sector = int(((hue + 15) % 360) // 30)
+    recent_words = {w.lower() for name in recent_names for w in name.split()}
+
+    if s < 0.10 or (lb == 4 and s < 0.35) or (lb == 0 and s < 0.35):
+        nouns = NEUTRAL_NOUNS[group]                      # fast grau, sehr hell oder sehr dunkel: Stein statt Blume
+    elif lb <= 1 and sector in DARK_NOUNS:
+        nouns = DARK_NOUNS[sector]                        # dunkles Rot bis Gelbgrün: Erdtöne
+    elif lb >= 3 and sector in LIGHT_NOUNS:
+        nouns = LIGHT_NOUNS[sector]                       # helles Rot bis Gelb: Pfirsich, Creme, Rosa
+    else:
+        nouns = HUE_NOUNS[sector]
+
+    # Passende Helligkeit: nichts Dunkles für helle Töne und umgekehrt
+    if lb < 3:
+        nouns = [n for n in nouns if n not in PALE_ONLY] or nouns
+    if lb > 1:
+        nouns = [n for n in nouns if n not in DARK_ONLY] or nouns
+
+    name = ""
+    for _ in range(60):
+        noun = _fresh(nouns, recent_words)
+        if random.random() < 0.7:
+            name = f"{_fresh(ADJECTIVES[(lb, sb)], recent_words)} {noun}"
+        else:
+            name = f"{noun} {_fresh(QUALITIES[group], recent_words)}"
+        if name.lower() not in taken:
+            return name
+    return name
+
+
+def generate_color_name(r, g, b, hex_code, recent_names=(), taken=frozenset()):
+    # 1. Gibt es schon einen bekannten Namen für diese Farbe? Dann wird er verwendet,
+    #    sofern ihn nicht schon ein anderer Tag trägt.
     known = lookup_universal_name(r, g, b, hex_code)
-    if known:
+    if known and known.lower() not in taken:
         return known
 
-    # 2. Ansonsten Fallback auf unsere poetische HSL-Logik
-    rf, gf, bf = r / 255.0, g / 255.0, b / 255.0
-    h, l, s = colorsys.rgb_to_hls(rf, gf, bf)
-    hue = h * 360
-
-    if l < 0.22:
-        light_mod = ["Deep-sea", "Midnight", "Abyss", "Shadows", "Obsidian"]
-    elif l > 0.78:
-        light_mod = ["Mist", "Whisper", "Dawn", "Glow", "Haze"]
-    elif s < 0.18:
-        light_mod = ["Muted", "Silent", "Dust", "Faded", "Soft"]
-    else:
-        light_mod = ["Radiant", "Vivid", "Ethereal", "Pure", "Luminous"]
-
-    if hue < 15 or hue >= 345:
-        base_names = ["scarlet", "crimson", "ember", "ruby", "blush"]
-    elif 15 <= hue < 45:
-        base_names = ["amber", "copper", "rust", "autumn", "terra"]
-    elif 45 <= hue < 70:
-        base_names = ["saffron", "honey", "ochre", "sun", "gold"]
-    elif 70 <= hue < 150:
-        base_names = ["olive", "moss", "emerald", "forest", "sage"]
-    elif 150 <= hue < 200:
-        base_names = ["teal", "lagoon", "pine", "glacier", "mint"]
-    elif 200 <= hue < 260:
-        base_names = ["cerulean", "azure", "cobalt", "ocean", "indigo"]
-    elif 260 <= hue < 310:
-        base_names = ["purple", "lilac", "lavender", "plum", "violet"]
-    else:
-        base_names = ["magenta", "coral", "rose", "orchid", "wine"]
-
-    mod = light_mod[(r + g) % len(light_mod)]
-    base = base_names[(g + b) % len(base_names)]
-
-    return title_case(f"{mod} {base}")
+    # 2. Ansonsten ein poetischer Name aus dem großen Wortschatz
+    return poetic_name(r, g, b, recent_names, taken)
 
 
 # ----------------------------------------------------------------------------
@@ -248,7 +394,9 @@ def ensure_today(history, today_str):
         if hex_code not in used_hex:
             break
 
-    color_name = generate_color_name(r, g, b, hex_code)
+    recent_names = [e.get("name", "") for e in history[-40:]]
+    taken = {e.get("name", "").lower() for e in history}
+    color_name = generate_color_name(r, g, b, hex_code, recent_names, taken)
     entry = {
         "day": day_number,
         "date": today_str,
