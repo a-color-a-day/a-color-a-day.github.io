@@ -108,5 +108,13 @@
     "rgb": [192, 27, 45],
     "name": "Brilliant Ruby",
     "notes": [33, 59, 62, 69, 108]
+  },
+  {
+    "day": 14,
+    "date": "2026-11-07",
+    "hex": "#FAA8C6",
+    "rgb": [250, 168, 198],
+    "name": "Glimmering Orchid",
+    "notes": [24, 29, 59, 95, 96]
   }
 ]
