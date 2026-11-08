@@ -116,5 +116,13 @@
     "rgb": [250, 168, 198],
     "name": "Glimmering Orchid",
     "notes": [24, 29, 59, 95, 96]
+  },
+  {
+    "day": 15,
+    "date": "2026-11-08",
+    "hex": "#4B149E",
+    "rgb": [75, 20, 158],
+    "name": "Majestic Nightshade",
+    "notes": [57, 80, 93, 97, 107]
   }
 ]
