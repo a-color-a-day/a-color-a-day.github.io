@@ -148,5 +148,13 @@
     "rgb": [200, 202, 202],
     "name": "Grey Screen",
     "notes": [28, 48, 72, 84, 101]
+  },
+  {
+    "day": 19,
+    "date": "2026-11-12",
+    "hex": "#EEFD4B",
+    "rgb": [238, 253, 75],
+    "name": "Dazzling Chamomile",
+    "notes": [25, 31, 36, 67, 75]
   }
 ]
