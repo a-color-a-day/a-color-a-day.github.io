@@ -172,5 +172,13 @@
     "rgb": [26, 51, 40],
     "name": "Obsidian Silence",
     "notes": [22, 34, 62, 76, 96]
+  },
+  {
+    "day": 22,
+    "date": "2026-11-15",
+    "hex": "#E5DBAA",
+    "rgb": [229, 219, 170],
+    "name": "Wistful Lemon-chiffon",
+    "notes": [62, 67, 82, 98, 99]
   }
 ]
