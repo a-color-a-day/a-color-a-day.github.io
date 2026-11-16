@@ -180,5 +180,13 @@
     "rgb": [229, 219, 170],
     "name": "Wistful Lemon-chiffon",
     "notes": [62, 67, 82, 98, 99]
+  },
+  {
+    "day": 23,
+    "date": "2026-11-16",
+    "hex": "#AC2B40",
+    "rgb": [172, 43, 64],
+    "name": "Thriving Carmine",
+    "notes": [41, 85, 90, 92, 102]
   }
 ]
