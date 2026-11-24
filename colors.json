@@ -244,5 +244,13 @@
     "rgb": [183, 185, 56],
     "name": "Pastoral Wheat",
     "notes": [54, 60, 69, 74, 105]
+  },
+  {
+    "day": 31,
+    "date": "2026-11-24",
+    "hex": "#6FFCAE",
+    "rgb": [111, 252, 174],
+    "name": "Sparkling Mint",
+    "notes": [26, 45, 79, 87, 108]
   }
 ]
