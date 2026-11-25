@@ -252,5 +252,13 @@
     "rgb": [111, 252, 174],
     "name": "Sparkling Mint",
     "notes": [26, 45, 79, 87, 108]
+  },
+  {
+    "day": 32,
+    "date": "2026-11-25",
+    "hex": "#240FC2",
+    "rgb": [36, 15, 194],
+    "name": "Sapphire Whisper",
+    "notes": [21, 38, 45, 48, 63]
   }
 ]
