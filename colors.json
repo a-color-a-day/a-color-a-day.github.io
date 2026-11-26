@@ -260,5 +260,13 @@
     "rgb": [36, 15, 194],
     "name": "Sapphire Whisper",
     "notes": [21, 38, 45, 48, 63]
+  },
+  {
+    "day": 33,
+    "date": "2026-11-26",
+    "hex": "#6E2311",
+    "rgb": [110, 35, 17],
+    "name": "Resonant Oxblood",
+    "notes": [43, 45, 60, 90, 100]
   }
 ]
