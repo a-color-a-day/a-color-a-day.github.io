@@ -276,5 +276,13 @@
     "rgb": [196, 17, 131],
     "name": "Medium Violet Red",
     "notes": [24, 27, 36, 84, 101]
+  },
+  {
+    "day": 35,
+    "date": "2026-11-28",
+    "hex": "#C58BE1",
+    "rgb": [197, 139, 225],
+    "name": "Candied Grape",
+    "notes": [39, 68, 91, 94, 101]
   }
 ]
